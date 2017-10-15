@@ -5,7 +5,6 @@ import computacaograficaswing.telas.BressenhamCirculo;
 import computacaograficaswing.util.PlanoCartesiano;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ComponentEvent;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Insets;
@@ -21,7 +20,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class ComputacaoGraficaSwing extends JApplet {
 
-    public static final int JFXPANEL_WIDTH_INT = 900;
+    public static final int JFXPANEL_WIDTH_INT = 1030;
     public static JFXPanel fxContainer;
     private static JFrame frame;
     public static JApplet applet;
@@ -57,8 +56,8 @@ public class ComputacaoGraficaSwing extends JApplet {
         add(fxContainer, BorderLayout.CENTER);
 
         Platform.runLater(() -> {
-            //new Bressenham().iniciarTela();
             fxContainer.setPreferredSize(new Dimension(JFXPANEL_WIDTH_INT, PlanoCartesiano.HEIGHT_PLANO));
+            //new Bressenham().iniciarTela();
             new BressenhamCirculo().iniciarTela();
             //createScene();
         });
@@ -74,15 +73,12 @@ public class ComputacaoGraficaSwing extends JApplet {
         Button bressenhamBotao = new Button();
         bressenhamBotao.setText("Algoritmo de Bressenham");
         bressenhamBotao.setOnAction((ActionEvent) -> {
-            frame.setPreferredSize(new Dimension(1200, PlanoCartesiano.HEIGHT_PLANO));
-            fxContainer.setPreferredSize(new Dimension(1200, PlanoCartesiano.HEIGHT_PLANO));//PlanoCartesiano.WIDTH_PLANO < Bressenham.WIDTH_MINIMO ? Bressenham.WIDTH_MINIMO : PlanoCartesiano.WIDTH_PLANO, PlanoCartesiano.HEIGHT_PLANO));
             new Bressenham().iniciarTela();
         });
 
         Button bressenhamCircularBotao = new Button();
         bressenhamCircularBotao.setText("Algoritmo de Bressenham (círculos)");
         bressenhamCircularBotao.setOnAction((ActionEvent) -> {
-            fxContainer.setPreferredSize(new Dimension(PlanoCartesiano.WIDTH_PLANO < BressenhamCirculo.WIDTH_MINIMO ? BressenhamCirculo.WIDTH_MINIMO : PlanoCartesiano.WIDTH_PLANO, PlanoCartesiano.HEIGHT_PLANO));
             new BressenhamCirculo().iniciarTela();
         });
 

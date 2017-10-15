@@ -8,7 +8,9 @@ import computacaograficaswing.util.PlanoCartesiano;
 import computacaograficaswing.util.Ponto;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -19,9 +21,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 public class BressenhamCirculo extends PlanoCartesiano{
-    
-    public static final int WIDTH_MINIMO = 779;
-    
     private TextField xCampo;
     private TextField yCampo;
     private TextField raioCampo;
@@ -62,6 +61,8 @@ public class BressenhamCirculo extends PlanoCartesiano{
         for (Ponto ponto : pontos) {
             desenharPonto(ponto);
         }
+        
+        aplicarBuffer();
     }
     
     private ArrayList<Ponto> reflexao(ArrayList<Ponto> pontos) {
@@ -131,17 +132,20 @@ public class BressenhamCirculo extends PlanoCartesiano{
             limparTela();
         });
         
-        hboxTop.getChildren().addAll(btn, helpText, xCampo, helpText2, yCampo, helpText3, raioCampo, calcularButton, limparTudoBtn);
+        ColorPicker colorPicker = new ColorPicker(PlanoCartesiano.corSelecionada);
+        colorPicker.setOnAction((ActionEvent event) -> {
+            PlanoCartesiano.corSelecionada = colorPicker.getValue();
+        });
+        
+        hboxTop.getChildren().addAll(btn, helpText, xCampo, helpText2, yCampo, helpText3, raioCampo, calcularButton, limparTudoBtn, colorPicker);
         
         root.setTop(hboxTop);
-        root.setCenter(inicializarPlano());
+        root.setCenter(this.inicializarPlano());
         
         if (PlanoCartesiano.WIDTH_PLANO < ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT) {
             root.setLeft(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - PlanoCartesiano.WIDTH_PLANO)/2 + 20, PlanoCartesiano.HEIGHT_PLANO, Color.WHITE));
             root.setRight(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - PlanoCartesiano.WIDTH_PLANO)/2 + 20, PlanoCartesiano.HEIGHT_PLANO, Color.WHITE));
         }
-
-        limparTela();
 
         fxContainer.setScene(new Scene(root));
     }
