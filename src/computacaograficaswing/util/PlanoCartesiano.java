@@ -2,7 +2,13 @@ package computacaograficaswing.util;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
@@ -82,6 +88,35 @@ public class PlanoCartesiano {
                         frameBuffer.removerRect(rect);
                     }
                 });
+                rect.setOnDragDetected((MouseEvent event) -> {
+                    Dragboard db = rect.startDragAndDrop(TransferMode.MOVE);
+                    
+                    if (rect.getFill().equals(corPadrao)) {
+                        rect.setFill(corSelecionada);
+                        frameBuffer.adicionarRect(rect);
+                    } else if (rect.getFill().equals(corSelecionada)) {
+                        rect.setFill(corPadrao);
+                        frameBuffer.removerRect(rect);
+                    }
+                    
+                    ClipboardContent cb = new ClipboardContent();
+                    cb.putString("");
+                    db.setContent(cb);
+                    
+                    event.consume();
+                });
+                rect.setOnDragOver((DragEvent event) -> {
+                    event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+                    if (rect.getFill().equals(corPadrao)) {
+                        rect.setFill(corSelecionada);
+                        frameBuffer.adicionarRect(rect);
+                    } else if (rect.getFill().equals(corSelecionada)) {
+                        rect.setFill(corPadrao);
+                        frameBuffer.removerRect(rect);
+                    }
+                    event.consume();
+                });
+                
                 primeiroQuadrante.add(rect, i, j);
             }
         }
