@@ -1,6 +1,5 @@
 package computacaograficaswing.util;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import javafx.scene.layout.GridPane;

@@ -44,4 +44,22 @@ public class Ponto {
     public String toString() {
         return "(" + x + ", " + y + ")";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Ponto) {
+            Ponto aux = (Ponto) obj;
+            return aux.getX() == x && aux.getY() == y && hashCode() == aux.hashCode();
+        }
+        
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + this.x;
+        hash = 29 * hash + this.y;
+        return hash;
+    }
 }

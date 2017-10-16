@@ -6,8 +6,8 @@ import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
 import computacaograficaswing.util.PlanoCartesiano;
 import computacaograficaswing.util.Ponto;
-import java.awt.Dimension;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.ColorPicker;
@@ -33,7 +33,7 @@ public class BressenhamCirculo extends PlanoCartesiano{
         int y = raio;
         int p = 1 - raio;
         
-        ArrayList<Ponto> pontos = new ArrayList<>();
+        Set<Ponto> pontos = new LinkedHashSet<>();
         pontos.add(new Ponto(x, y));
         
         while (x < y) {            
@@ -48,37 +48,49 @@ public class BressenhamCirculo extends PlanoCartesiano{
             pontos.add(new Ponto(x, y));
         }
         
-        pontos = reflexao(pontos);
+        reflexao(pontos);
         
         if (deslocamentoX > 0)
-            for (Ponto ponto : pontos)
+            pontos.stream().forEach((ponto) -> {
                 ponto.setX(ponto.getX() + deslocamentoX);
+        });
         
         if (deslocamentoY > 0)
-            for (Ponto ponto : pontos)
+            pontos.stream().forEach((ponto) -> {
                 ponto.setY(ponto.getY() + deslocamentoY);
+        });
         
-        for (Ponto ponto : pontos) {
+        pontos.stream().forEach((ponto) -> {
             desenharPonto(ponto);
-        }
+        });
         
         aplicarBuffer();
     }
     
-    private ArrayList<Ponto> reflexao(ArrayList<Ponto> pontos) {
-        ArrayList<Ponto> newPontos = new ArrayList<>(pontos);
+    private void reflexao(Set<Ponto> pontos) {  
+        Set<Ponto> aux = new LinkedHashSet<>(pontos);
         
-        for (Ponto ponto : pontos) {
-            newPontos.add(new Ponto(-ponto.getX(), ponto.getY()));
-            newPontos.add(new Ponto(ponto.getX(), -ponto.getY()));
-            newPontos.add(new Ponto(-ponto.getX(), -ponto.getY()));
-            newPontos.add(new Ponto(ponto.getY(), ponto.getX()));
-            newPontos.add(new Ponto(-ponto.getY(), ponto.getX()));
-            newPontos.add(new Ponto(ponto.getY(), -ponto.getX()));
-            newPontos.add(new Ponto(-ponto.getY(), -ponto.getX()));
-        }
-        
-        return newPontos;
+        aux.stream().map((ponto) -> {
+            pontos.add(new Ponto(-ponto.getX(), ponto.getY()));
+            return ponto;
+        }).map((ponto) -> {
+            pontos.add(new Ponto(ponto.getX(), -ponto.getY()));
+            return ponto;
+        }).map((ponto) -> {
+            pontos.add(new Ponto(-ponto.getX(), -ponto.getY()));
+            return ponto;
+        }).map((ponto) -> {
+            pontos.add(new Ponto(ponto.getY(), ponto.getX()));
+            return ponto;
+        }).map((ponto) -> {
+            pontos.add(new Ponto(-ponto.getY(), ponto.getX()));
+            return ponto;
+        }).map((ponto) -> {
+            pontos.add(new Ponto(ponto.getY(), -ponto.getX()));
+            return ponto;
+        }).forEach((ponto) -> {
+            pontos.add(new Ponto(-ponto.getY(), -ponto.getX()));
+        });
     }
     
     public void iniciarTela() {

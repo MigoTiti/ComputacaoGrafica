@@ -8,7 +8,8 @@ import computacaograficaswing.util.PlanoCartesiano;
 import computacaograficaswing.util.Ponto;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
@@ -54,7 +55,7 @@ public class Bressenham extends PlanoCartesiano {
         int x = x1;
         int y = y1;
 
-        ArrayList<Ponto> pontos = new ArrayList<>();
+        Set<Ponto> pontos = new LinkedHashSet<>();
         pontos.add(new Ponto(x, y));
 
         while (x < x2) {
@@ -68,11 +69,11 @@ public class Bressenham extends PlanoCartesiano {
             pontos.add(new Ponto(x, y));
         }
 
-        pontos = reflexaoVolta(pontos);
+        reflexaoVolta(pontos);
 
-        for (Ponto ponto : pontos) {
+        pontos.stream().forEach((ponto) -> {
             desenharPonto(ponto);
-        }
+        });
 
         aplicarBuffer();
     }
@@ -116,7 +117,7 @@ public class Bressenham extends PlanoCartesiano {
         return new int[]{x1, y1, x2, y2};
     }
 
-    private ArrayList<Ponto> reflexaoVolta(ArrayList<Ponto> pontos) {
+    private void reflexaoVolta(Set<Ponto> pontos) {
         if (trocaY) {
             pontos.stream().forEach((ponto) -> {
                 ponto.negarY();
@@ -137,8 +138,6 @@ public class Bressenham extends PlanoCartesiano {
             });
             trocaXY = false;
         }
-
-        return pontos;
     }
 
     public void iniciarTela() {
