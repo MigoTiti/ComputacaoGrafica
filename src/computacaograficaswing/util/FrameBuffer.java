@@ -40,16 +40,8 @@ public class FrameBuffer {
         }
     }
 
-    public void adicionarRect(Rectangle rect) {
-        pontosDesenhados.add(rect);
-    }
-
-    public boolean semPontosDesenhados() {
-        return pontosDesenhados.isEmpty();
-    }
-
-    public void removerRect(Rectangle rect) {
-        pontosDesenhados.remove(rect);
+    public Set<Rectangle> getPontosDesenhados() {
+        return pontosDesenhados;
     }
 
     public void limparBuffer() {

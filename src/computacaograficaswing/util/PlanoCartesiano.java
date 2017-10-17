@@ -115,22 +115,22 @@ public class PlanoCartesiano {
         rect.setOnMouseClicked((MouseEvent event) -> {
             if (rect.getFill().equals(corPadrao)) {
                 rect.setFill(corSelecionada);
-                frameBuffer.adicionarRect(rect);
+                frameBuffer.getPontosDesenhados().add(rect);
             } else {
                 rect.setFill(corPadrao);
-                frameBuffer.removerRect(rect);
+                frameBuffer.getPontosDesenhados().remove(rect);
             }
         });
 
         rect.setOnMouseDragOver((MouseDragEvent event) -> {
             if (corSelecionada.equals(corPadrao) && !rect.getFill().equals(corPadrao)) {
                 rect.setFill(corPadrao);
-                frameBuffer.removerRect(rect);
+                frameBuffer.getPontosDesenhados().remove(rect);
             } else if (corSelecionada.equals(corPadrao) && rect.getFill().equals(corPadrao)) {
 
             } else {
                 rect.setFill(corSelecionada);
-                frameBuffer.adicionarRect(rect);
+                frameBuffer.getPontosDesenhados().add(rect);
             }
         });
 
@@ -138,7 +138,7 @@ public class PlanoCartesiano {
     }
 
     protected void limparTela() {
-        if (frameBuffer.semPontosDesenhados()) {
+        if (frameBuffer.getPontosDesenhados().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Info");
             alert.setHeaderText(null);
