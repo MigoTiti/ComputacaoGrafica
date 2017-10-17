@@ -58,8 +58,8 @@ public class ComputacaoGraficaSwing extends JApplet {
         Platform.runLater(() -> {
             fxContainer.setPreferredSize(new Dimension(JFXPANEL_WIDTH_INT, PlanoCartesiano.HEIGHT_PLANO));
             //new Bressenham().iniciarTela();
-            new BressenhamCirculo().iniciarTela();
-            //createScene();
+            //new BressenhamCirculo().iniciarTela();
+            createScene();
         });
     }
 
