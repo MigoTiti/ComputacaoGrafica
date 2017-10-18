@@ -2,7 +2,8 @@ package computacaograficaswing;
 
 import computacaograficaswing.telas.Bressenham;
 import computacaograficaswing.telas.BressenhamCirculo;
-import computacaograficaswing.util.PlanoCartesiano;
+import computacaograficaswing.telas.Preenchimento;
+import areasdesenho.PlanoCartesiano;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javafx.application.Platform;
@@ -81,11 +82,17 @@ public class ComputacaoGraficaSwing extends JApplet {
         bressenhamCircularBotao.setOnAction((ActionEvent) -> {
             new BressenhamCirculo().iniciarTela();
         });
+        
+        Button preenchimentoButton = new Button();
+        preenchimentoButton.setText("Preenchimento de formas");
+        preenchimentoButton.setOnAction((ActionEvent) -> {
+            new Preenchimento().iniciarTela();
+        });
 
         HBox hboxTop = new HBox();
         hboxTop.setPadding(new Insets(15, 12, 15, 12));
         hboxTop.setSpacing(10);
-        hboxTop.getChildren().addAll(bressenhamBotao, bressenhamCircularBotao);
+        hboxTop.getChildren().addAll(bressenhamBotao, bressenhamCircularBotao, preenchimentoButton);
 
         BorderPane root = new BorderPane();
         root.setCenter(hboxTop);

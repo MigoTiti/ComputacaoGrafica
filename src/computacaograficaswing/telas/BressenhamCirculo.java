@@ -4,7 +4,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
-import computacaograficaswing.util.PlanoCartesiano;
+import areasdesenho.PlanoCartesiano;
 import computacaograficaswing.util.Ponto;
 import java.util.LinkedHashSet;
 import java.util.Set;

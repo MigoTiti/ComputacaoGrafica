@@ -1,25 +1,21 @@
 package computacaograficaswing.util;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;
 
-public class FrameBuffer {
+public class FrameBufferPlanoCartesiano extends FrameBufferBase{
 
     private GridPane primeiroQuadrante;
     private GridPane segundoQuadrante;
     private GridPane terceiroQuadrante;
     private GridPane quartoQuadrante;
 
-    private final Set<Rectangle> pontosDesenhados;
-
-    public FrameBuffer(GridPane primeiroQuadrante, GridPane segundoQuadrante, GridPane terceiroQuadrante, GridPane quartoQuadrante) {
+    public FrameBufferPlanoCartesiano(GridPane primeiroQuadrante, GridPane segundoQuadrante, GridPane terceiroQuadrante, GridPane quartoQuadrante) {
+        super();
         this.primeiroQuadrante = primeiroQuadrante;
         this.segundoQuadrante = segundoQuadrante;
         this.terceiroQuadrante = terceiroQuadrante;
         this.quartoQuadrante = quartoQuadrante;
-        this.pontosDesenhados = new LinkedHashSet<>();
     }
 
     public void desenharPonto(int quadrante, Rectangle rect, int x, int y) {
@@ -38,18 +34,6 @@ public class FrameBuffer {
                 quartoQuadrante.add(rect, x, y);
                 break;
         }
-    }
-
-    public Set<Rectangle> getPontosDesenhados() {
-        return pontosDesenhados;
-    }
-
-    public void limparBuffer() {
-        pontosDesenhados.stream().forEach((pontoDesenhado) -> {
-            pontoDesenhado.setFill(PlanoCartesiano.corPadrao);
-        });
-
-        pontosDesenhados.clear();
     }
 
     public void setPrimeiroQuadrante(GridPane primeiroQuadrante) {
