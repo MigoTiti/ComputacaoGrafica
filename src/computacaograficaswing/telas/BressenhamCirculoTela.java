@@ -20,7 +20,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public class BressenhamCirculo extends PlanoCartesiano{
+public class BressenhamCirculoTela extends PlanoCartesiano{
     private TextField xCampo;
     private TextField yCampo;
     private TextField raioCampo;

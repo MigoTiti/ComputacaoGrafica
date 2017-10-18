@@ -5,10 +5,8 @@ import javafx.scene.control.Button;
 import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
 import computacaograficaswing.areasdesenho.PlanoCartesiano;
+import computacaograficaswing.util.BressenhamReta;
 import computacaograficaswing.util.Ponto;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -23,122 +21,12 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public class Bressenham extends PlanoCartesiano {
-
-    private boolean trocaXY;
-    private boolean trocaX;
-    private boolean trocaY;
+public class BressenhamRetaTela extends PlanoCartesiano {
 
     private TextField x1Campo;
     private TextField x2Campo;
     private TextField y1Campo;
     private TextField y2Campo;
-
-    private void aplicarBressenham(Ponto p1, Ponto p2) {
-        int[] novosPontos = reflexao(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-        int x1 = novosPontos[0];
-        int y1 = novosPontos[1];
-        int x2 = novosPontos[2];
-        int y2 = novosPontos[3];
-
-        int deltaX = x2 - x1;
-        int deltaY = y2 - y1;
-
-        double coeficienteAngular = (double) deltaY / (double) deltaX;
-
-        BigDecimal bd = new BigDecimal(coeficienteAngular);
-        bd = bd.setScale(1, RoundingMode.HALF_DOWN);
-        coeficienteAngular = bd.doubleValue();
-
-        double erro = coeficienteAngular - 0.5;
-
-        int x = x1;
-        int y = y1;
-
-        Set<Ponto> pontos = new LinkedHashSet<>();
-        pontos.add(new Ponto(x, y));
-
-        while (x < x2) {
-            if (erro >= 0) {
-                y++;
-                erro--;
-            }
-
-            x++;
-            erro += coeficienteAngular;
-            pontos.add(new Ponto(x, y));
-        }
-
-        reflexaoVolta(pontos);
-
-        pontos.stream().forEach((ponto) -> {
-            desenharPonto(ponto);
-        });
-
-        aplicarBuffer();
-    }
-
-    private int[] reflexao(int x1, int y1, int x2, int y2) {
-        int deltaX = x2 - x1;
-        int deltaY = y2 - y1;
-
-        double coeficienteAngular = (double) deltaY / (double) deltaX;
-
-        BigDecimal bd = new BigDecimal(coeficienteAngular);
-        bd = bd.setScale(1, RoundingMode.HALF_DOWN);
-        coeficienteAngular = bd.doubleValue();
-
-        if (coeficienteAngular > 1 || coeficienteAngular <= -1) {
-            int aux = x1;
-            x1 = y1;
-            y1 = aux;
-
-            aux = x2;
-            x2 = y2;
-            y2 = aux;
-
-            trocaXY = true;
-        }
-
-        if (x1 > x2) {
-            x1 = -x1;
-            x2 = -x2;
-
-            trocaX = true;
-        }
-
-        if (y1 > y2) {
-            y1 = -y1;
-            y2 = -y2;
-
-            trocaY = true;
-        }
-
-        return new int[]{x1, y1, x2, y2};
-    }
-
-    private void reflexaoVolta(Set<Ponto> pontos) {
-        if (trocaY) {
-            pontos.stream().forEach((ponto) -> {
-                ponto.negarY();
-            });
-            trocaY = false;
-        }
-
-        if (trocaX) {
-            pontos.stream().forEach((ponto) -> {
-                ponto.negarX();
-            });
-            trocaX = false;
-        }
-
-        if (trocaXY) {
-            pontos.stream().forEach((ponto) -> {
-                ponto.trocarCoordenadas();
-            });
-            trocaXY = false;
-        }
-    }
 
     public void iniciarTela() {
         ComputacaoGraficaSwing.mudarTitulo("Algoritmo de Bressenham");
@@ -199,7 +87,13 @@ public class Bressenham extends PlanoCartesiano {
                     int y1 = Integer.parseInt(y1Campo.getText());
                     int x2 = Integer.parseInt(x2Campo.getText());
                     int y2 = Integer.parseInt(y2Campo.getText());
-                    aplicarBressenham(new Ponto(x1, y1), new Ponto(x2, y2));
+                    
+                    Set<Ponto> pontos = new BressenhamReta().aplicarBressenham(new Ponto(x1, y1), new Ponto(x2, y2));
+                    pontos.stream().forEach((ponto) -> {
+                        desenharPonto(ponto);
+                    });
+
+                    aplicarBuffer();
                 } catch (NumberFormatException e) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Erro");
@@ -236,7 +130,7 @@ public class Bressenham extends PlanoCartesiano {
             root.setLeft(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - PlanoCartesiano.WIDTH_PLANO) / 2 + 20, PlanoCartesiano.HEIGHT_PLANO, Color.WHITE));
             root.setRight(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - PlanoCartesiano.WIDTH_PLANO) / 2 + 20, PlanoCartesiano.HEIGHT_PLANO, Color.WHITE));
         }
-
+        
         fxContainer.setScene(new Scene(root));
     }
 }

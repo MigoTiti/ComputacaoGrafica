@@ -1,10 +1,8 @@
 package computacaograficaswing.areasdesenho;
 
 import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
-import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.util.FrameBufferGrid;
 import javafx.geometry.Insets;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -15,7 +13,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class GridDesenho extends AreaDesenho{
+public abstract class GridDesenho extends AreaDesenho{
     
     protected GridPane gridPane;
     
@@ -45,32 +43,7 @@ public class GridDesenho extends AreaDesenho{
     }
 
     @Override
-    protected Rectangle gerarRect(Color cor) {
-        Rectangle rect = new Rectangle(TAMANHO_CELULA, TAMANHO_CELULA, cor);
-        rect.setOnMouseClicked((MouseEvent event) -> {
-            if (rect.getFill().equals(corPadrao)) {
-                rect.setFill(corSelecionada);
-                frameBuffer.getPontosDesenhados().add(rect);
-            } else {
-                rect.setFill(corPadrao);
-                frameBuffer.getPontosDesenhados().remove(rect);
-            }
-        });
-
-        rect.setOnMouseDragOver((MouseDragEvent event) -> {
-            if (corSelecionada.equals(corPadrao) && !rect.getFill().equals(corPadrao)) {
-                rect.setFill(corPadrao);
-                frameBuffer.getPontosDesenhados().remove(rect);
-            } else if (corSelecionada.equals(corPadrao) && rect.getFill().equals(corPadrao)) {
-
-            } else {
-                rect.setFill(corSelecionada);
-                frameBuffer.getPontosDesenhados().add(rect);
-            }
-        });
-
-        return rect;
-    }
+    protected abstract Rectangle gerarRect(Color cor);
     
     @Override
     protected void aplicarBuffer() {

@@ -1,11 +1,15 @@
 package computacaograficaswing.telas;
 
-import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
-import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
+import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_CELULA;
+import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
+import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.areasdesenho.GridDesenho;
+import computacaograficaswing.util.BressenhamReta;
 import computacaograficaswing.util.FrameBufferGrid;
+import computacaograficaswing.util.Ponto;
+import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -18,10 +22,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class Preenchimento extends GridDesenho {
+public class PreenchimentoTela extends GridDesenho {
 
     private boolean preenchimentoAtivado;
     private boolean poligonoAtivado;
+    private boolean poligonoEmConstrucao;
+    private Ponto pontoInicialReta;
+    private Set<Ponto> retaAtual;
 
     public static Color corPreenchimento = Color.BLACK;
 
@@ -58,7 +65,13 @@ public class Preenchimento extends GridDesenho {
                 preencherBalde.setTextFill(Color.RED);
             }
 
-            poligonoAtivado = !poligonoAtivado;
+            if (poligonoAtivado) {
+                poligonoAtivado = false;
+                poligonoEmConstrucao = true;
+                pontoInicialReta = null;
+            } else {
+                poligonoAtivado = true;
+            }
         });
 
         preencherBalde.setOnAction((ActionEvent) -> {
@@ -71,12 +84,14 @@ public class Preenchimento extends GridDesenho {
 
             if (poligonoAtivado) {
                 poligonoAtivado = false;
+                poligonoEmConstrucao = false;
+                pontoInicialReta = null;
                 desenharForma.setTextFill(Color.RED);
             }
 
             preenchimentoAtivado = !preenchimentoAtivado;
         });
-        
+
         Button preencherVarredura = new Button();
         preencherVarredura.setText("Preencher por varredura");
         preencherVarredura.setOnAction((ActionEvent) -> {
@@ -121,16 +136,46 @@ public class Preenchimento extends GridDesenho {
 
     @Override
     protected Rectangle gerarRect(Color cor) {
-        Rectangle rect = super.gerarRect(cor);
+        Rectangle rect = new Rectangle(TAMANHO_CELULA, TAMANHO_CELULA, cor);
+
         rect.setOnMouseClicked((MouseEvent event) -> {
             if (preenchimentoAtivado) {
                 preenchimentoRecursivo(((Color) rect.getFill()), corPreenchimento, (int) GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+            } else if (poligonoAtivado) {
+                if (poligonoEmConstrucao) {
+                    retaAtual = new BressenhamReta().aplicarBressenham(pontoInicialReta, new Ponto(GridPane.getColumnIndex(rect), GridPane.getRowIndex(rect)));
+                    retaAtual.forEach((ponto) -> {
+                        Rectangle aux = gerarRect(corSelecionada);
+                        ((FrameBufferGrid) frameBuffer).desenharPonto(aux, ponto.getX(), ponto.getY());
+                    });
+                    rect.setFill(corSelecionada);
+                    frameBuffer.getPontosDesenhados().add(rect);
+                } else {
+                    rect.setFill(corSelecionada);
+                    frameBuffer.getPontosDesenhados().add(rect);
+                    poligonoEmConstrucao = true;
+                    pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), GridPane.getRowIndex(rect));
+                }
             } else if (rect.getFill().equals(corPadrao)) {
                 rect.setFill(corSelecionada);
                 frameBuffer.getPontosDesenhados().add(rect);
             } else {
                 rect.setFill(corPadrao);
                 frameBuffer.getPontosDesenhados().remove(rect);
+            }
+        });
+
+        rect.setOnMouseDragOver((MouseDragEvent) -> {
+            if (!(preenchimentoAtivado || poligonoAtivado)) {
+                if (corSelecionada.equals(corPadrao) && !rect.getFill().equals(corPadrao)) {
+                    rect.setFill(corPadrao);
+                    frameBuffer.getPontosDesenhados().remove(rect);
+                } else if (corSelecionada.equals(corPadrao) && rect.getFill().equals(corPadrao)) {
+
+                } else {
+                    rect.setFill(corSelecionada);
+                    frameBuffer.getPontosDesenhados().add(rect);
+                }
             }
         });
 

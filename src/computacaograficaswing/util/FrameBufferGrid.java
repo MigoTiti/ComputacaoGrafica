@@ -30,8 +30,12 @@ public class FrameBufferGrid extends FrameBufferBase {
             }
         }
     }
-
-    private Rectangle getRectanglePorXEY(int x, int y) {
+    
+    public void deletarPonto(Color cor, int x, int y) {
+        (getRectanglePorXEY(x, y)).setFill(cor);
+    }
+    
+    public Rectangle getRectanglePorXEY(int x, int y) {
         Rectangle rect = null;
 
         for (Node node : gridPane.getChildren()) {
