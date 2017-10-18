@@ -15,7 +15,7 @@ public class FrameBufferGrid extends FrameBufferBase {
     }
 
     public void preencherRecursivamente(Color corInicial, Color corPreenchimento, int x, int y) {
-        if (x >= 0 && y >= 0 && y < areasdesenho.AreaDesenho.ORDEM && x < areasdesenho.AreaDesenho.ORDEM) {
+        if (x >= 0 && y >= 0 && y < computacaograficaswing.areasdesenho.AreaDesenho.ORDEM && x < computacaograficaswing.areasdesenho.AreaDesenho.ORDEM) {
             Rectangle rect = getRectanglePorXEY(x, y);
             Color corAtual = ((Color) rect.getFill());
             if (!corAtual.equals(corInicial)) {

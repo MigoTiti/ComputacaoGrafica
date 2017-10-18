@@ -1,4 +1,4 @@
-package areasdesenho;
+package computacaograficaswing.areasdesenho;
 
 import computacaograficaswing.util.FrameBufferPlanoCartesiano;
 import computacaograficaswing.util.Ponto;

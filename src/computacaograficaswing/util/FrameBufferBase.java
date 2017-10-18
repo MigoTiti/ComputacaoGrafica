@@ -18,7 +18,7 @@ public abstract class FrameBufferBase {
 
     public void limparBuffer() {
         pontosDesenhados.stream().forEach((pontoDesenhado) -> {
-            pontoDesenhado.setFill(areasdesenho.AreaDesenho.corPadrao);
+            pontoDesenhado.setFill(computacaograficaswing.areasdesenho.AreaDesenho.corPadrao);
         });
 
         pontosDesenhados.clear();

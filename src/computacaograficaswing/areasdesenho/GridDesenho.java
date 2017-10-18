@@ -1,7 +1,7 @@
-package areasdesenho;
+package computacaograficaswing.areasdesenho;
 
-import static areasdesenho.AreaDesenho.corPadrao;
-import static areasdesenho.AreaDesenho.corSelecionada;
+import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
+import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.util.FrameBufferGrid;
 import javafx.geometry.Insets;
 import javafx.scene.input.MouseDragEvent;

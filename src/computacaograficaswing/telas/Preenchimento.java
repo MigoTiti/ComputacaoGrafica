@@ -1,10 +1,10 @@
 package computacaograficaswing.telas;
 
-import static areasdesenho.AreaDesenho.corPadrao;
-import static areasdesenho.AreaDesenho.corSelecionada;
+import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
+import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
-import areasdesenho.GridDesenho;
+import computacaograficaswing.areasdesenho.GridDesenho;
 import computacaograficaswing.util.FrameBufferGrid;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;

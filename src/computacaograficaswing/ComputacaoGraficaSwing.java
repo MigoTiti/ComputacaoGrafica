@@ -3,7 +3,7 @@ package computacaograficaswing;
 import computacaograficaswing.telas.Bressenham;
 import computacaograficaswing.telas.BressenhamCirculo;
 import computacaograficaswing.telas.Preenchimento;
-import areasdesenho.PlanoCartesiano;
+import computacaograficaswing.areasdesenho.PlanoCartesiano;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javafx.application.Platform;

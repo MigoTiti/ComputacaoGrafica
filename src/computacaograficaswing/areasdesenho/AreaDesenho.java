@@ -1,4 +1,4 @@
-package areasdesenho;
+package computacaograficaswing.areasdesenho;
 
 import computacaograficaswing.util.FrameBufferBase;
 import javafx.scene.control.Alert;
