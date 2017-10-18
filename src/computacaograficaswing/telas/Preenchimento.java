@@ -24,7 +24,7 @@ public class Preenchimento extends GridDesenho {
     private boolean poligonoAtivado;
 
     public static Color corPreenchimento = Color.BLACK;
-    
+
     public void iniciarTela() {
         ComputacaoGraficaSwing.mudarTitulo("Preenchimento");
         Button btn = new Button();
@@ -41,20 +41,46 @@ public class Preenchimento extends GridDesenho {
 
         Button preencherBalde = new Button();
         preencherBalde.setText("Preencher");
-        preencherBalde.setOnAction((ActionEvent) -> {
-            preenchimentoAtivado = !preenchimentoAtivado;
-        });
+        preencherBalde.setTextFill(Color.RED);
 
         Button desenharForma = new Button();
         desenharForma.setText("Desenhar forma");
+        desenharForma.setTextFill(Color.RED);
         desenharForma.setOnAction((ActionEvent) -> {
+            if (poligonoAtivado) {
+                desenharForma.setTextFill(Color.RED);
+            } else {
+                desenharForma.setTextFill(Color.GREEN);
+            }
 
+            if (preenchimentoAtivado) {
+                preenchimentoAtivado = false;
+                preencherBalde.setTextFill(Color.RED);
+            }
+
+            poligonoAtivado = !poligonoAtivado;
         });
 
+        preencherBalde.setOnAction((ActionEvent) -> {
+
+            if (preenchimentoAtivado) {
+                preencherBalde.setTextFill(Color.RED);
+            } else {
+                preencherBalde.setTextFill(Color.GREEN);
+            }
+
+            if (poligonoAtivado) {
+                poligonoAtivado = false;
+                desenharForma.setTextFill(Color.RED);
+            }
+
+            preenchimentoAtivado = !preenchimentoAtivado;
+        });
+        
         Button preencherVarredura = new Button();
         preencherVarredura.setText("Preencher por varredura");
         preencherVarredura.setOnAction((ActionEvent) -> {
-            
+
         });
 
         Button limparTudoBtn = new Button();
@@ -67,7 +93,7 @@ public class Preenchimento extends GridDesenho {
         colorPicker.setOnAction((ActionEvent event) -> {
             corSelecionada = colorPicker.getValue();
         });
-        
+
         ColorPicker colorPicker2 = new ColorPicker(corPreenchimento);
         colorPicker2.setOnAction((ActionEvent event) -> {
             corPreenchimento = colorPicker2.getValue();
@@ -79,6 +105,8 @@ public class Preenchimento extends GridDesenho {
 
         inicializarPlano();
 
+        root.setCenter(gridPane);
+
         if (WIDTH_PLANO < ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT) {
             root.setLeft(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - WIDTH_PLANO) / 2 + 20, HEIGHT_PLANO, Color.WHITE));
             root.setRight(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - WIDTH_PLANO) / 2 + 20, HEIGHT_PLANO, Color.WHITE));
@@ -88,15 +116,15 @@ public class Preenchimento extends GridDesenho {
     }
 
     private void preenchimentoRecursivo(Color corInicial, Color corPreenchimento, int x, int y) {
-        ((FrameBufferGrid)frameBuffer).preencherRecursivamente(corInicial, corPreenchimento, x, y);
+        ((FrameBufferGrid) frameBuffer).preencherRecursivamente(corInicial, corPreenchimento, x, y);
     }
-    
+
     @Override
     protected Rectangle gerarRect(Color cor) {
         Rectangle rect = super.gerarRect(cor);
         rect.setOnMouseClicked((MouseEvent event) -> {
             if (preenchimentoAtivado) {
-                preenchimentoRecursivo(((Color)rect.getFill()), corPreenchimento, (int)GridPane.getColumnIndex(rect), (int)GridPane.getRowIndex(rect));
+                preenchimentoRecursivo(((Color) rect.getFill()), corPreenchimento, (int) GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
             } else if (rect.getFill().equals(corPadrao)) {
                 rect.setFill(corSelecionada);
                 frameBuffer.getPontosDesenhados().add(rect);

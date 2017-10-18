@@ -3,8 +3,6 @@ package computacaograficaswing.areasdesenho;
 import computacaograficaswing.util.FrameBufferPlanoCartesiano;
 import computacaograficaswing.util.Ponto;
 import javafx.geometry.Insets;
-import javafx.scene.control.Alert;
-import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -13,7 +11,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class PlanoCartesiano extends AreaDesenho{
 
@@ -67,23 +64,8 @@ public class PlanoCartesiano extends AreaDesenho{
                 //Pane pane = new Pane();
                 //pane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1, 1, 1, 1))));
                 primeiroQuadrante.add(gerarRect(corPadrao), i, j);
-            }
-        }
-
-        for (int i = 0; i < ORDEM / 2; i++) {
-            for (int j = 0; j < ORDEM / 2; j++) {
                 segundoQuadrante.add(gerarRect(corPadrao), i, j);
-            }
-        }
-
-        for (int i = 0; i < ORDEM / 2; i++) {
-            for (int j = 0; j < ORDEM / 2; j++) {
                 terceiroQuadrante.add(gerarRect(corPadrao), i, j);
-            }
-        }
-
-        for (int i = 0; i < ORDEM / 2; i++) {
-            for (int j = 0; j < ORDEM / 2; j++) {
                 quartoQuadrante.add(gerarRect(corPadrao), i, j);
             }
         }
