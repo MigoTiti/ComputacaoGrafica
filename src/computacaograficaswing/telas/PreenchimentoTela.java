@@ -56,8 +56,10 @@ public class PreenchimentoTela extends GridDesenho {
         desenharForma.setOnAction((ActionEvent) -> {
             if (poligonoAtivado) {
                 desenharForma.setTextFill(Color.RED);
+                gridPane.setGridLinesVisible(false);
             } else {
                 desenharForma.setTextFill(Color.GREEN);
+                gridPane.setGridLinesVisible(true);
             }
 
             if (preenchimentoAtivado) {
@@ -78,8 +80,10 @@ public class PreenchimentoTela extends GridDesenho {
 
             if (preenchimentoAtivado) {
                 preencherBalde.setTextFill(Color.RED);
+                gridPane.setGridLinesVisible(false);
             } else {
                 preencherBalde.setTextFill(Color.GREEN);
+                gridPane.setGridLinesVisible(true);
             }
 
             if (poligonoAtivado) {
@@ -102,6 +106,7 @@ public class PreenchimentoTela extends GridDesenho {
         limparTudoBtn.setText("Limpar tela");
         limparTudoBtn.setOnAction((ActionEvent) -> {
             limparTela();
+            gridPane.setGridLinesVisible(false);
         });
 
         ColorPicker colorPicker = new ColorPicker(corSelecionada);
