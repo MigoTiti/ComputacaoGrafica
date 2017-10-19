@@ -80,8 +80,6 @@ public class PlanoCartesiano extends AreaDesenho{
         int y = p.getY();
 
         if (x >= 0 && y >= 0) {
-            //Pane pane = new Pane();
-            //pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, new Insets(1, 1, 1, 1))));
             int yNovo = (ORDEM / 2 - 1) - y;
 
             ((FrameBufferPlanoCartesiano)frameBuffer).desenharPonto(1, gerarRect(corBressenham), x, yNovo);

@@ -28,6 +28,7 @@ public class PreenchimentoTela extends GridDesenho {
     private boolean poligonoAtivado;
     private boolean poligonoEmConstrucao;
     private Ponto pontoInicialReta;
+    private Ponto pontoInicialRetaAtual;
     private Set<Ponto> retaAtual;
 
     public static Color corPreenchimento = Color.BLACK;
@@ -138,7 +139,7 @@ public class PreenchimentoTela extends GridDesenho {
     private void preenchimentoRecursivo(Color corInicial, Color corPreenchimento, int x, int y) {
         long tInicial = System.nanoTime();
         ((FrameBufferGrid) frameBuffer).preencherRecursivamente(corInicial, corPreenchimento, x, y);
-        System.out.println("Tempo de execucao em segundos: " + ((System.nanoTime() - tInicial)/Math.pow(10, 9)));
+        System.out.println("Tempo de execucao em segundos: " + ((System.nanoTime() - tInicial) / Math.pow(10, 9)));
     }
 
     @Override
@@ -150,18 +151,23 @@ public class PreenchimentoTela extends GridDesenho {
                 preenchimentoRecursivo(((Color) rect.getFill()), corPreenchimento, (int) GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
             } else if (poligonoAtivado) {
                 if (poligonoEmConstrucao) {
-                    retaAtual = new BressenhamReta().aplicarBressenham(pontoInicialReta, new Ponto(GridPane.getColumnIndex(rect), GridPane.getRowIndex(rect)));
-                    retaAtual.forEach((ponto) -> {
-                        Rectangle aux = gerarRect(corSelecionada);
-                        ((FrameBufferGrid) frameBuffer).desenharPonto(aux, ponto.getX(), ponto.getY());
-                    });
-                    rect.setFill(corSelecionada);
-                    frameBuffer.getPontosDesenhados().add(rect);
+                    Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    if (!p.equals(pontoInicialRetaAtual)) {
+                        retaAtual = new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p);
+                        retaAtual.forEach((ponto) -> {
+                            Rectangle aux = gerarRect(corSelecionada);
+                            ((FrameBufferGrid) frameBuffer).desenharPonto(aux, ponto.getX(), ponto.getY());
+                        });
+                        if (p.equals(pontoInicialReta)) {
+                            poligonoEmConstrucao = false;
+                        } else {
+                            pontoInicialRetaAtual = p;
+                        }
+                    }
                 } else {
-                    rect.setFill(corSelecionada);
-                    frameBuffer.getPontosDesenhados().add(rect);
                     poligonoEmConstrucao = true;
-                    pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), GridPane.getRowIndex(rect));
+                    pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    pontoInicialRetaAtual = pontoInicialReta;
                 }
             } else if (rect.getFill().equals(corPadrao)) {
                 rect.setFill(corSelecionada);

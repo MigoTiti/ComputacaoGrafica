@@ -1,7 +1,5 @@
 package computacaograficaswing.util;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -28,10 +26,6 @@ public class BressenhamReta {
         int deltaY = y2 - y1;
 
         double coeficienteAngular = (double) deltaY / (double) deltaX;
-
-        BigDecimal bd = new BigDecimal(coeficienteAngular);
-        bd = bd.setScale(1, RoundingMode.HALF_DOWN);
-        coeficienteAngular = bd.doubleValue();
 
         double erro = coeficienteAngular - 0.5;
 
@@ -61,10 +55,6 @@ public class BressenhamReta {
         int deltaY = y2 - y1;
 
         double coeficienteAngular = (double) deltaY / (double) deltaX;
-
-        BigDecimal bd = new BigDecimal(coeficienteAngular);
-        bd = bd.setScale(1, RoundingMode.HALF_DOWN);
-        coeficienteAngular = bd.doubleValue();
 
         if (coeficienteAngular > 1 || coeficienteAngular <= -1) {
             int aux = x1;
