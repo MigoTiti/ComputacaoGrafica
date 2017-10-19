@@ -131,7 +131,9 @@ public class PreenchimentoTela extends GridDesenho {
     }
 
     private void preenchimentoRecursivo(Color corInicial, Color corPreenchimento, int x, int y) {
+        long tInicial = System.nanoTime();
         ((FrameBufferGrid) frameBuffer).preencherRecursivamente(corInicial, corPreenchimento, x, y);
+        System.out.println("Tempo de execucao em segundos: " + ((System.nanoTime() - tInicial)/Math.pow(10, 9)));
     }
 
     @Override
