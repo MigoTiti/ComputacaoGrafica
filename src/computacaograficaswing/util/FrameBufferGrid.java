@@ -1,9 +1,7 @@
 package computacaograficaswing.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -14,10 +12,13 @@ public class FrameBufferGrid extends FrameBufferBase {
     private GridPane gridPane;
 
     private List<Ponto> pontosPreenchidos;
+    
+    private Rectangle[][] gridPaneMatriz;
 
-    public FrameBufferGrid(GridPane gridPane) {
+    public FrameBufferGrid(GridPane gridPane, Rectangle[][] gridPaneMatriz) {
         super();
         this.gridPane = gridPane;
+        this.gridPaneMatriz = gridPaneMatriz;
     }
 
     public void preencherRecursivamente(Color corInicial, Color corPreenchimento, int x, int y) {
@@ -28,7 +29,7 @@ public class FrameBufferGrid extends FrameBufferBase {
 
     public void iniciarPreenchimento(Color corInicial, Color corPreenchimento, int x, int y) {
         if (x >= 0 && y >= 0 && y < computacaograficaswing.areasdesenho.AreaDesenho.ORDEM && x < computacaograficaswing.areasdesenho.AreaDesenho.ORDEM) {
-            Rectangle rect = getRectanglePorXEY(x, y);
+            Rectangle rect = gridPaneMatriz[x][y];
             Color corAtual = ((Color) rect.getFill());
             if (!corAtual.equals(corInicial)) {
 
@@ -75,5 +76,13 @@ public class FrameBufferGrid extends FrameBufferBase {
 
     public GridPane getGridPane() {
         return gridPane;
+    }
+
+    public void setGridPaneMatriz(Rectangle[][] gridPaneMatriz) {
+        this.gridPaneMatriz = gridPaneMatriz;
+    }
+
+    public Rectangle[][] getGridPaneMatriz() {
+        return gridPaneMatriz;
     }
 }

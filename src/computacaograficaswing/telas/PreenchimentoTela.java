@@ -116,7 +116,6 @@ public class PreenchimentoTela extends GridDesenho {
         limparTudoBtn.setText("Limpar tela");
         limparTudoBtn.setOnAction((ActionEvent) -> {
             limparTela();
-            gridPane.setGridLinesVisible(false);
         });
 
         ColorPicker colorPicker = new ColorPicker(corSelecionada);
@@ -145,7 +144,6 @@ public class PreenchimentoTela extends GridDesenho {
         fxContainer.setScene(new Scene(root));
     }
 
-    @Override
     protected void inicializarPlano() {
         gridPane = new GridPane();
         gridPane.setStyle("-fx-border-color: black; -fx-border-width: 1 1 1 1; -fx-padding: 0;");
@@ -172,7 +170,7 @@ public class PreenchimentoTela extends GridDesenho {
             }
         }
 
-        frameBuffer = new FrameBufferGrid(gridPane);
+        frameBuffer = new FrameBufferGrid(gridPane, gridPaneMatriz);
     }
 
     private void preenchimentoRecursivo(Color corInicial, Color corPreenchimento, int x, int y) {
@@ -194,7 +192,7 @@ public class PreenchimentoTela extends GridDesenho {
                     if (!p.equals(pontoInicialRetaAtual)) {
                         retaAtual = new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p);
                         retaAtual.forEach((ponto) -> {
-                            desenharPonto(corSelecionada, getRectanglePorXEY(ponto.getX(), ponto.getY()));
+                            desenharPonto(corSelecionada, gridPaneMatriz[ponto.getX()][ponto.getY()]);
                         });
                         if (p.equals(pontoInicialReta)) {
                             poligonoEmConstrucao = false;
