@@ -2,6 +2,7 @@ package computacaograficaswing.telas;
 
 import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
+import static computacaograficaswing.areasdesenho.AreaDesenho.ORDEM;
 import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_CELULA;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
@@ -17,9 +18,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -31,6 +37,8 @@ public class PreenchimentoTela extends GridDesenho {
     private Ponto pontoInicialReta;
     private Ponto pontoInicialRetaAtual;
     private Set<Ponto> retaAtual;
+
+    private Rectangle[][] gridPaneMatriz;
 
     public static Color corPreenchimento = Color.BLACK;
 
@@ -126,7 +134,7 @@ public class PreenchimentoTela extends GridDesenho {
         root.setTop(hboxTop);
 
         inicializarPlano();
-
+        
         root.setCenter(gridPane);
 
         if (WIDTH_PLANO < ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT) {
@@ -135,6 +143,36 @@ public class PreenchimentoTela extends GridDesenho {
         }
 
         fxContainer.setScene(new Scene(root));
+    }
+
+    @Override
+    protected void inicializarPlano() {
+        gridPane = new GridPane();
+        gridPane.setStyle("-fx-border-color: black; -fx-border-width: 1 1 1 1; -fx-padding: 0;");
+
+        for (int i = 0; i < ORDEM; i++) {
+            gridPane.getColumnConstraints().add(new ColumnConstraints(TAMANHO_CELULA));
+            gridPane.getRowConstraints().add(new RowConstraints(TAMANHO_CELULA));
+        }
+
+        gridPane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, new Insets(0.5))));
+
+        gridPane.setOnDragDetected((MouseEvent event) -> {
+            gridPane.startFullDrag();
+            event.consume();
+        });
+
+        gridPaneMatriz = new Rectangle[ORDEM][ORDEM];
+        
+        for (int i = 0; i < ORDEM; i++) {
+            for (int j = 0; j < ORDEM; j++) {
+                Rectangle rect = gerarRect(corPadrao);
+                gridPane.add(rect, i, j);
+                gridPaneMatriz[i][j] = rect;
+            }
+        }
+
+        frameBuffer = new FrameBufferGrid(gridPane);
     }
 
     private void preenchimentoRecursivo(Color corInicial, Color corPreenchimento, int x, int y) {
@@ -206,13 +244,14 @@ public class PreenchimentoTela extends GridDesenho {
 
         return rect;
     }
-    
+
     private void desenharPonto(Color cor, Rectangle rect) {
         rect.setFill(cor);
-        
-        if (!cor.equals(corPadrao))
+
+        if (!cor.equals(corPadrao)) {
             frameBuffer.getPontosDesenhados().add(rect);
-        else
+        } else {
             frameBuffer.getPontosDesenhados().remove(rect);
+        }
     }
 }
