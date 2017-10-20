@@ -49,8 +49,6 @@ public abstract class AreaDesenho {
         return rect;
     }
     
-    protected abstract void aplicarBuffer();
-    
     protected void limparTela() {
         if (frameBuffer.getPontosDesenhados().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -60,7 +58,6 @@ public abstract class AreaDesenho {
             alert.showAndWait();
         } else {
             frameBuffer.limparBuffer();
-            aplicarBuffer();
         }
     }
 }

@@ -2,18 +2,17 @@ package computacaograficaswing.telas;
 
 import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
+import computacaograficaswing.areasdesenho.AreaDesenho;
 import static computacaograficaswing.areasdesenho.AreaDesenho.ORDEM;
 import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_CELULA;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
-import computacaograficaswing.areasdesenho.GridDesenho;
 import computacaograficaswing.util.BressenhamReta;
 import computacaograficaswing.util.FrameBufferGrid;
 import computacaograficaswing.util.Ponto;
 import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
@@ -29,7 +28,7 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class PreenchimentoTela extends GridDesenho {
+public class PreenchimentoTela extends AreaDesenho {
 
     private boolean preenchimentoAtivado;
     private boolean poligonoAtivado;
@@ -37,6 +36,7 @@ public class PreenchimentoTela extends GridDesenho {
     private Ponto pontoInicialReta;
     private Ponto pontoInicialRetaAtual;
     private Set<Ponto> retaAtual;
+    private GridPane gridPane;
 
     private Rectangle[][] gridPaneMatriz;
 
@@ -66,10 +66,8 @@ public class PreenchimentoTela extends GridDesenho {
         desenharForma.setOnAction((ActionEvent) -> {
             if (poligonoAtivado) {
                 desenharForma.setTextFill(Color.RED);
-                gridPane.setGridLinesVisible(false);
             } else {
                 desenharForma.setTextFill(Color.GREEN);
-                gridPane.setGridLinesVisible(true);
             }
 
             if (preenchimentoAtivado) {
@@ -90,10 +88,8 @@ public class PreenchimentoTela extends GridDesenho {
 
             if (preenchimentoAtivado) {
                 preencherBalde.setTextFill(Color.RED);
-                gridPane.setGridLinesVisible(false);
             } else {
                 preencherBalde.setTextFill(Color.GREEN);
-                gridPane.setGridLinesVisible(true);
             }
 
             if (poligonoAtivado) {
@@ -170,7 +166,7 @@ public class PreenchimentoTela extends GridDesenho {
             }
         }
 
-        frameBuffer = new FrameBufferGrid(gridPane, gridPaneMatriz);
+        frameBuffer = new FrameBufferGrid(gridPaneMatriz);
     }
 
     private void preenchimentoRecursivo(Color corInicial, Color corPreenchimento, int x, int y) {
@@ -183,6 +179,7 @@ public class PreenchimentoTela extends GridDesenho {
     protected Rectangle gerarRect(Color cor) {
         Rectangle rect = new Rectangle(TAMANHO_CELULA, TAMANHO_CELULA, cor);
 
+        rect.setStyle("-fx-padding: 0;");
         rect.setOnMouseClicked((MouseEvent event) -> {
             if (preenchimentoAtivado) {
                 preenchimentoRecursivo(((Color) rect.getFill()), corPreenchimento, (int) GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
@@ -226,19 +223,6 @@ public class PreenchimentoTela extends GridDesenho {
                 }
             }
         });
-
-        return rect;
-    }
-
-    private Rectangle getRectanglePorXEY(int x, int y) {
-        Rectangle rect = null;
-
-        for (Node node : gridPane.getChildren()) {
-            if (GridPane.getRowIndex(node) == y && GridPane.getColumnIndex(node) == x) {
-                rect = (Rectangle) node;
-                break;
-            }
-        }
 
         return rect;
     }

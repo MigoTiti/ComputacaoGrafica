@@ -6,7 +6,7 @@ import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
 import computacaograficaswing.areasdesenho.PlanoCartesiano;
 import computacaograficaswing.util.Ponto;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -33,7 +33,7 @@ public class BressenhamCirculoTela extends PlanoCartesiano{
         int y = raio;
         int p = 1 - raio;
         
-        Set<Ponto> pontos = new LinkedHashSet<>();
+        Set<Ponto> pontos = new HashSet<>();
         pontos.add(new Ponto(x, y));
         
         while (x < y) {            
@@ -68,7 +68,7 @@ public class BressenhamCirculoTela extends PlanoCartesiano{
     }
     
     private void reflexao(Set<Ponto> pontos) {  
-        Set<Ponto> aux = new LinkedHashSet<>(pontos);
+        Set<Ponto> aux = new HashSet<>(pontos);
         
         aux.stream().map((ponto) -> {
             pontos.add(new Ponto(-ponto.getX(), ponto.getY()));

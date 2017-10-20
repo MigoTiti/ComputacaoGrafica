@@ -61,8 +61,6 @@ public class PlanoCartesiano extends AreaDesenho{
 
         for (int i = 0; i < ORDEM / 2; i++) {
             for (int j = 0; j < ORDEM / 2; j++) {
-                //Pane pane = new Pane();
-                //pane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1, 1, 1, 1))));
                 primeiroQuadrante.add(gerarRect(corPadrao), i, j);
                 segundoQuadrante.add(gerarRect(corPadrao), i, j);
                 terceiroQuadrante.add(gerarRect(corPadrao), i, j);
@@ -100,7 +98,6 @@ public class PlanoCartesiano extends AreaDesenho{
         }
     }
 
-    @Override
     protected void aplicarBuffer() {
         primeiroQuadrante = ((FrameBufferPlanoCartesiano)frameBuffer).getPrimeiroQuadrante();
         segundoQuadrante = ((FrameBufferPlanoCartesiano)frameBuffer).getSegundoQuadrante();
