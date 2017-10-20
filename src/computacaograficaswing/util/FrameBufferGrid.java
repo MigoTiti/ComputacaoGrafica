@@ -1,6 +1,9 @@
 package computacaograficaswing.util;
 
-import computacaograficaswing.telas.PreenchimentoTela;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -10,12 +13,20 @@ public class FrameBufferGrid extends FrameBufferBase {
 
     private GridPane gridPane;
 
+    private List<Ponto> pontosPreenchidos;
+
     public FrameBufferGrid(GridPane gridPane) {
         super();
         this.gridPane = gridPane;
     }
 
     public void preencherRecursivamente(Color corInicial, Color corPreenchimento, int x, int y) {
+        pontosPreenchidos = new ArrayList<>();
+        iniciarPreenchimento(corInicial, corPreenchimento, x, y);
+        System.err.println("");
+    }
+
+    public void iniciarPreenchimento(Color corInicial, Color corPreenchimento, int x, int y) {
         if (x >= 0 && y >= 0 && y < computacaograficaswing.areasdesenho.AreaDesenho.ORDEM && x < computacaograficaswing.areasdesenho.AreaDesenho.ORDEM) {
             Rectangle rect = getRectanglePorXEY(x, y);
             Color corAtual = ((Color) rect.getFill());
@@ -24,18 +35,27 @@ public class FrameBufferGrid extends FrameBufferBase {
             } else {
                 rect.setFill(corPreenchimento);
                 pontosDesenhados.add(rect);
-                preencherRecursivamente(corInicial, corPreenchimento, x + 1, y);
-                preencherRecursivamente(corInicial, corPreenchimento, x - 1, y);
-                preencherRecursivamente(corInicial, corPreenchimento, x, y + 1);
-                preencherRecursivamente(corInicial, corPreenchimento, x, y - 1);
+                pontosPreenchidos.add(new Ponto(x, y));
+                
+                if (!pontosPreenchidos.contains(new Ponto(x + 1, y))) {
+                    iniciarPreenchimento(corInicial, corPreenchimento, x + 1, y);
+                }
+
+                if (!pontosPreenchidos.contains(new Ponto(x - 1, y))) {
+                    iniciarPreenchimento(corInicial, corPreenchimento, x - 1, y);
+                }
+
+                if (!pontosPreenchidos.contains(new Ponto(x, y + 1))) {
+                    iniciarPreenchimento(corInicial, corPreenchimento, x, y + 1);
+                }
+
+                if (!pontosPreenchidos.contains(new Ponto(x, y - 1))) {
+                    iniciarPreenchimento(corInicial, corPreenchimento, x, y - 1);
+                }
             }
         }
     }
-    
-    public void deletarPonto(Color cor, int x, int y) {
-        (getRectanglePorXEY(x, y)).setFill(cor);
-    }
-    
+
     public Rectangle getRectanglePorXEY(int x, int y) {
         Rectangle rect = null;
 
@@ -47,11 +67,6 @@ public class FrameBufferGrid extends FrameBufferBase {
         }
 
         return rect;
-    }
-
-    public void desenharPonto(Rectangle rect, int x, int y) {
-        pontosDesenhados.add(rect);
-        gridPane.add(rect, x, y);
     }
 
     public void setGridPane(GridPane gridPane) {

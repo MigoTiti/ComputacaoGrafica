@@ -12,6 +12,7 @@ import computacaograficaswing.util.Ponto;
 import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
@@ -155,8 +156,7 @@ public class PreenchimentoTela extends GridDesenho {
                     if (!p.equals(pontoInicialRetaAtual)) {
                         retaAtual = new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p);
                         retaAtual.forEach((ponto) -> {
-                            Rectangle aux = gerarRect(corSelecionada);
-                            ((FrameBufferGrid) frameBuffer).desenharPonto(aux, ponto.getX(), ponto.getY());
+                            desenharPonto(corSelecionada, getRectanglePorXEY(ponto.getX(), ponto.getY()));
                         });
                         if (p.equals(pontoInicialReta)) {
                             poligonoEmConstrucao = false;
@@ -168,6 +168,7 @@ public class PreenchimentoTela extends GridDesenho {
                     poligonoEmConstrucao = true;
                     pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     pontoInicialRetaAtual = pontoInicialReta;
+                    desenharPonto(corSelecionada, rect);
                 }
             } else if (rect.getFill().equals(corPadrao)) {
                 rect.setFill(corSelecionada);
@@ -181,17 +182,37 @@ public class PreenchimentoTela extends GridDesenho {
         rect.setOnMouseDragOver((MouseDragEvent) -> {
             if (!(preenchimentoAtivado || poligonoAtivado)) {
                 if (corSelecionada.equals(corPadrao) && !rect.getFill().equals(corPadrao)) {
-                    rect.setFill(corPadrao);
-                    frameBuffer.getPontosDesenhados().remove(rect);
+                    desenharPonto(corPadrao, rect);
                 } else if (corSelecionada.equals(corPadrao) && rect.getFill().equals(corPadrao)) {
 
                 } else {
-                    rect.setFill(corSelecionada);
-                    frameBuffer.getPontosDesenhados().add(rect);
+                    desenharPonto(corSelecionada, rect);
                 }
             }
         });
 
         return rect;
+    }
+
+    private Rectangle getRectanglePorXEY(int x, int y) {
+        Rectangle rect = null;
+
+        for (Node node : gridPane.getChildren()) {
+            if (GridPane.getRowIndex(node) == y && GridPane.getColumnIndex(node) == x) {
+                rect = (Rectangle) node;
+                break;
+            }
+        }
+
+        return rect;
+    }
+    
+    private void desenharPonto(Color cor, Rectangle rect) {
+        rect.setFill(cor);
+        
+        if (!cor.equals(corPadrao))
+            frameBuffer.getPontosDesenhados().add(rect);
+        else
+            frameBuffer.getPontosDesenhados().remove(rect);
     }
 }
