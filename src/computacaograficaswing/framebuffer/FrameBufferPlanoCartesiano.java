@@ -1,4 +1,4 @@
-package computacaograficaswing.util;
+package computacaograficaswing.framebuffer;
 
 import javafx.scene.layout.GridPane;
 import javafx.scene.shape.Rectangle;

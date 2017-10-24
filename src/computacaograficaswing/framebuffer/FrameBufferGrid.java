@@ -1,5 +1,6 @@
-package computacaograficaswing.util;
+package computacaograficaswing.framebuffer;
 
+import computacaograficaswing.util.Ponto;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.paint.Color;

@@ -1,6 +1,6 @@
 package computacaograficaswing.areasdesenho;
 
-import computacaograficaswing.util.FrameBufferPlanoCartesiano;
+import computacaograficaswing.framebuffer.FrameBufferPlanoCartesiano;
 import computacaograficaswing.util.Ponto;
 import javafx.geometry.Insets;
 import javafx.scene.input.MouseEvent;

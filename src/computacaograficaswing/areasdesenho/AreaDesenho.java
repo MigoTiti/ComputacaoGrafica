@@ -1,6 +1,6 @@
 package computacaograficaswing.areasdesenho;
 
-import computacaograficaswing.util.FrameBufferBase;
+import computacaograficaswing.framebuffer.FrameBufferBase;
 import javafx.scene.control.Alert;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;

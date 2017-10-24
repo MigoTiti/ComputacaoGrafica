@@ -8,8 +8,11 @@ import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_CELULA;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.util.BressenhamReta;
-import computacaograficaswing.util.FrameBufferGrid;
+import computacaograficaswing.framebuffer.FrameBufferGrid;
+import computacaograficaswing.util.Poligono;
 import computacaograficaswing.util.Ponto;
+import computacaograficaswing.util.Reta;
+import java.util.HashSet;
 import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -37,6 +40,8 @@ public class PreenchimentoTela extends AreaDesenho {
     private Ponto pontoInicialRetaAtual;
     private Set<Ponto> retaAtual;
     private GridPane gridPane;
+    private Poligono poligonoAtual;
+    private Set<Poligono> poligonos;
 
     private Rectangle[][] gridPaneMatriz;
 
@@ -65,6 +70,11 @@ public class PreenchimentoTela extends AreaDesenho {
         desenharForma.setTextFill(Color.RED);
         desenharForma.setOnAction((ActionEvent) -> {
             if (poligonoAtivado) {
+                pontoInicialRetaAtual = null;
+                pontoInicialReta = null;
+                poligonoAtual = null;
+                poligonoEmConstrucao = false;
+                retaAtual = null;
                 desenharForma.setTextFill(Color.RED);
             } else {
                 desenharForma.setTextFill(Color.GREEN);
@@ -77,7 +87,6 @@ public class PreenchimentoTela extends AreaDesenho {
 
             if (poligonoAtivado) {
                 poligonoAtivado = false;
-                poligonoEmConstrucao = true;
                 pontoInicialReta = null;
             } else {
                 poligonoAtivado = true;
@@ -105,13 +114,18 @@ public class PreenchimentoTela extends AreaDesenho {
         Button preencherVarredura = new Button();
         preencherVarredura.setText("Preencher por varredura");
         preencherVarredura.setOnAction((ActionEvent) -> {
-
+            
         });
 
         Button limparTudoBtn = new Button();
         limparTudoBtn.setText("Limpar tela");
         limparTudoBtn.setOnAction((ActionEvent) -> {
             limparTela();
+            poligonoAtual = null;
+            poligonos = null;
+            retaAtual = null;
+            pontoInicialReta = null;
+            pontoInicialRetaAtual = null;
         });
 
         ColorPicker colorPicker = new ColorPicker(corSelecionada);
@@ -137,6 +151,8 @@ public class PreenchimentoTela extends AreaDesenho {
             root.setRight(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - WIDTH_PLANO) / 2 + 20, HEIGHT_PLANO, Color.WHITE));
         }
 
+        poligonos = new HashSet<>();
+        
         fxContainer.setScene(new Scene(root));
     }
 
@@ -191,13 +207,20 @@ public class PreenchimentoTela extends AreaDesenho {
                         retaAtual.forEach((ponto) -> {
                             desenharPonto(corSelecionada, gridPaneMatriz[ponto.getX()][ponto.getY()]);
                         });
+                        
+                        Reta aux = new Reta(retaAtual);
+                        poligonoAtual.getRetas().add(aux);
+                        
                         if (p.equals(pontoInicialReta)) {
                             poligonoEmConstrucao = false;
+                            poligonos.add(poligonoAtual);
+                            poligonoAtual = null;
                         } else {
                             pontoInicialRetaAtual = p;
                         }
                     }
                 } else {
+                    poligonoAtual = new Poligono();
                     poligonoEmConstrucao = true;
                     pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     pontoInicialRetaAtual = pontoInicialReta;

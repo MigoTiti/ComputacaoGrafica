@@ -1,4 +1,4 @@
-package computacaograficaswing.util;
+package computacaograficaswing.framebuffer;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
