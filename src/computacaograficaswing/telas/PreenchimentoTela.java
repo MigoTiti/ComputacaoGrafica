@@ -77,6 +77,7 @@ public class PreenchimentoTela extends AreaDesenho {
                 retaAtual = null;
                 desenharForma.setTextFill(Color.RED);
             } else {
+                gridPane.setGridLinesVisible(true);
                 desenharForma.setTextFill(Color.GREEN);
             }
 
@@ -114,7 +115,7 @@ public class PreenchimentoTela extends AreaDesenho {
         Button preencherVarredura = new Button();
         preencherVarredura.setText("Preencher por varredura");
         preencherVarredura.setOnAction((ActionEvent) -> {
-            
+            preencherPorVarredura();
         });
 
         Button limparTudoBtn = new Button();
@@ -143,7 +144,7 @@ public class PreenchimentoTela extends AreaDesenho {
         root.setTop(hboxTop);
 
         inicializarPlano();
-        
+
         root.setCenter(gridPane);
 
         if (WIDTH_PLANO < ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT) {
@@ -152,8 +153,30 @@ public class PreenchimentoTela extends AreaDesenho {
         }
 
         poligonos = new HashSet<>();
-        
+
         fxContainer.setScene(new Scene(root));
+    }
+
+    protected void preencherPorVarredura() {
+        boolean preencher = false;
+        for (int i = 0; i < gridPaneMatriz.length; i++) {
+            for (int j = 0; j < gridPaneMatriz.length; j++) {
+                if (preencher && !Poligono.isTroca(poligonos, j, i))
+                    desenharPonto(corPreenchimento, gridPaneMatriz[j][i]);
+                
+                if (Poligono.isTroca(poligonos, j, i)) {
+                    while (Poligono.isTroca(poligonos, ++j, i)) {
+
+                    }
+                    preencher = !preencher;
+
+                    if (preencher) {
+                        desenharPonto(corPreenchimento, gridPaneMatriz[j][i]);
+                    }
+                }
+            }
+            preencher = false;
+        }
     }
 
     protected void inicializarPlano() {
@@ -173,7 +196,7 @@ public class PreenchimentoTela extends AreaDesenho {
         });
 
         gridPaneMatriz = new Rectangle[ORDEM][ORDEM];
-        
+
         for (int i = 0; i < ORDEM; i++) {
             for (int j = 0; j < ORDEM; j++) {
                 Rectangle rect = gerarRect(corPadrao);
@@ -207,10 +230,10 @@ public class PreenchimentoTela extends AreaDesenho {
                         retaAtual.forEach((ponto) -> {
                             desenharPonto(corSelecionada, gridPaneMatriz[ponto.getX()][ponto.getY()]);
                         });
-                        
+
                         Reta aux = new Reta(retaAtual);
                         poligonoAtual.getRetas().add(aux);
-                        
+
                         if (p.equals(pontoInicialReta)) {
                             poligonoEmConstrucao = false;
                             poligonos.add(poligonoAtual);
