@@ -28,23 +28,32 @@ public class Poligono {
         this.retas = retas;
     }
 
-    public static boolean isTroca(Set<Poligono> poligonos, int x, int y) {
-        boolean intersecao = false;
+    public static int getIntersecoes(Set<Poligono> poligonos, int x, int y) {
+        int contagem = 0;
         for (Poligono poligono : poligonos) {
             for (Reta reta : poligono.getRetas()) {
                 for (Ponto ponto : reta.getPontos()) {
-                    if (ponto.getX() == x && ponto.getY() == y) {
-                        if (!intersecao) {
-                            intersecao = true;
-                            break;
-                        } else {
-                            
-                        }
+                    if (ponto.getX() == x && ponto.getY() == y && ponto.getY() != reta.getYMinimo()) {
+                        contagem++;
                     }
                 }
             }
         }
 
-        return intersecao;
+        return contagem;
+    }
+    
+    public static boolean hasIntersecao(Set<Poligono> poligonos, int x, int y) {
+        for (Poligono poligono : poligonos) {
+            for (Reta reta : poligono.getRetas()) {
+                for (Ponto ponto : reta.getPontos()) {
+                    if (ponto.getX() == x && ponto.getY() == y) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
 }

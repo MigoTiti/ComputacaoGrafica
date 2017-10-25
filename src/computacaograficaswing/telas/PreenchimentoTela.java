@@ -161,18 +161,14 @@ public class PreenchimentoTela extends AreaDesenho {
         boolean preencher = false;
         for (int i = 0; i < gridPaneMatriz.length; i++) {
             for (int j = 0; j < gridPaneMatriz.length; j++) {
-                if (preencher && !Poligono.isTroca(poligonos, j, i))
-                    desenharPonto(corPreenchimento, gridPaneMatriz[j][i]);
+                int contagem = Poligono.getIntersecoes(poligonos, j, i);
                 
-                if (Poligono.isTroca(poligonos, j, i)) {
-                    while (Poligono.isTroca(poligonos, ++j, i)) {
-
-                    }
+                if (contagem % 2 != 0 && Poligono.getIntersecoes(poligonos, j - 1, i) == 0) {
                     preencher = !preencher;
-
-                    if (preencher) {
-                        desenharPonto(corPreenchimento, gridPaneMatriz[j][i]);
-                    }
+                }
+                
+                if (contagem == 0 && preencher && !Poligono.hasIntersecao(poligonos, j, i)) {
+                    desenharPonto(corPreenchimento, gridPaneMatriz[j][i]);
                 }
             }
             preencher = false;
