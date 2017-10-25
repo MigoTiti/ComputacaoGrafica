@@ -164,11 +164,11 @@ public class PreenchimentoTela extends AreaDesenho {
     protected void preencherPorVarredura2() {
         for (int i = 0; i < gridPaneMatriz.length; i++) {
             for (int j = 0; j < gridPaneMatriz.length; j++) {
-                List<Ponto> pontos = new ArrayList<>(Poligono.getIntersecoes(poligonos, j));
+                List<Ponto> pontos = Poligono.getIntersecoes(poligonos, j);
 
                 if (pontos.size() % 2 == 0) {
                     for (int k = 0; k < pontos.size(); k += 2) {
-                        for (int n = pontos.get(k).getX(); n < pontos.get(k + 1).getX(); n++) {
+                        for (int n = pontos.get(k).getX() + 1; n <= pontos.get(k + 1).getX(); n++) {
                             if (!Poligono.hasIntersecao(poligonos, n, j))
                                 desenharPonto(corPreenchimento, gridPaneMatriz[n][j]);
                         }

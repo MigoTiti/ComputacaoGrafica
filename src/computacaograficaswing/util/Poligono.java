@@ -1,5 +1,7 @@
 package computacaograficaswing.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -31,15 +33,27 @@ public class Poligono {
         this.retas = retas;
     }
 
-    public static Set<Ponto> getIntersecoes(Set<Poligono> poligonos, int y) {
-        Set<Ponto> pontos = new TreeSet<>((Ponto o1, Ponto o2) -> Integer.compare(o1.getX(), o2.getX()));
+    public static List<Ponto> getIntersecoes(Set<Poligono> poligonos, int y) {
+        List<Ponto> pontos = new ArrayList<>();
         
         for (Poligono poligono : poligonos) {
             for (Reta reta : poligono.getRetas()) {
                 if (y <= reta.getYMaximo() && y >= reta.getYMinimo()) {
                     Ponto min = reta.getPontoMinimo();
-                    int x = (int)Math.round((reta.get1SobreM() * (y - min.getY())) + min.getX());
+                    int x = (int)((reta.get1SobreM() * (y - min.getY())) + min.getX());
                     pontos.add(new Ponto(x, y));
+                }
+            }
+        }
+        
+        pontos.sort((Ponto o1, Ponto o2) -> Integer.compare(o1.getX(), o2.getX()));
+        
+        for (int i = pontos.size() - 1; i >= 0; i--) {
+            Ponto ponto = pontos.get(i);
+            int contagem = Collections.frequency(pontos, ponto);
+            if (contagem > 1) {
+                if (getIntersecoes(poligonos, ponto.getX(), ponto.getY()) == 1) {
+                    pontos.remove(i);
                 }
             }
         }
