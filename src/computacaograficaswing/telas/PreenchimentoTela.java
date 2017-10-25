@@ -12,8 +12,11 @@ import computacaograficaswing.framebuffer.FrameBufferGrid;
 import computacaograficaswing.util.Poligono;
 import computacaograficaswing.util.Ponto;
 import computacaograficaswing.util.Reta;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -115,7 +118,8 @@ public class PreenchimentoTela extends AreaDesenho {
         Button preencherVarredura = new Button();
         preencherVarredura.setText("Preencher por varredura");
         preencherVarredura.setOnAction((ActionEvent) -> {
-            preencherPorVarredura();
+            //preencherPorVarredura();
+            preencherPorVarredura2();
         });
 
         Button limparTudoBtn = new Button();
@@ -157,16 +161,33 @@ public class PreenchimentoTela extends AreaDesenho {
         fxContainer.setScene(new Scene(root));
     }
 
+    protected void preencherPorVarredura2() {
+        for (int i = 0; i < gridPaneMatriz.length; i++) {
+            for (int j = 0; j < gridPaneMatriz.length; j++) {
+                List<Ponto> pontos = new ArrayList<>(Poligono.getIntersecoes(poligonos, j));
+
+                if (pontos.size() % 2 == 0) {
+                    for (int k = 0; k < pontos.size(); k += 2) {
+                        for (int n = pontos.get(k).getX(); n < pontos.get(k + 1).getX(); n++) {
+                            if (!Poligono.hasIntersecao(poligonos, n, j))
+                                desenharPonto(corPreenchimento, gridPaneMatriz[n][j]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     protected void preencherPorVarredura() {
         boolean preencher = false;
         for (int i = 0; i < gridPaneMatriz.length; i++) {
             for (int j = 0; j < gridPaneMatriz.length; j++) {
                 int contagem = Poligono.getIntersecoes(poligonos, j, i);
-                
+
                 if (contagem % 2 != 0 && Poligono.getIntersecoes(poligonos, j - 1, i) == 0) {
                     preencher = !preencher;
                 }
-                
+
                 if (contagem == 0 && preencher && !Poligono.hasIntersecao(poligonos, j, i)) {
                     desenharPonto(corPreenchimento, gridPaneMatriz[j][i]);
                 }
