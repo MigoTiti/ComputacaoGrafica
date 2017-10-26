@@ -33,21 +33,21 @@ public class Poligono {
         this.retas = retas;
     }
 
-    public static List<Ponto> getIntersecoes(Set<Poligono> poligonos, int y) {
+    public static List<Ponto> getIntersecoes(Set<Poligono> poligonos, int yVarredura) {
         List<Ponto> pontos = new ArrayList<>();
-        
+
         for (Poligono poligono : poligonos) {
             for (Reta reta : poligono.getRetas()) {
-                if (y <= reta.getYMaximo() && y >= reta.getYMinimo()) {
+                if (yVarredura <= reta.getYMaximo() && yVarredura >= reta.getYMinimo()) {
                     Ponto min = reta.getPontoMinimo();
-                    int x = (int)((reta.get1SobreM() * (y - min.getY())) + min.getX());
-                    pontos.add(new Ponto(x, y));
+                    int x = (int) ((reta.get1SobreM() * (yVarredura - min.getY())) + min.getX());
+                    pontos.add(new Ponto(x, yVarredura));
                 }
             }
         }
-        
+
         pontos.sort((Ponto o1, Ponto o2) -> Integer.compare(o1.getX(), o2.getX()));
-        
+
         for (int i = pontos.size() - 1; i >= 0; i--) {
             Ponto ponto = pontos.get(i);
             int contagem = Collections.frequency(pontos, ponto);
@@ -57,10 +57,67 @@ public class Poligono {
                 }
             }
         }
-        
+
+
+        refatorarPontos(pontos);
+
+
+
         return pontos;
     }
-    
+
+    public static void refatorarPontos(List<Ponto> pontos) {
+        int indiceInicial = 0;
+        int indiceFinal = 0;
+        List<Integer> pontosARemover = new ArrayList<>();
+
+        for (int i = 1; i < pontos.size(); i++) {
+            int xAux = pontos.get(i).getX();
+            if (xAux == pontos.get(i - 1).getX() + 1) {
+                indiceFinal = i;
+            } else {
+                if (indiceFinal - indiceInicial - 1 > 0) {
+                    if (indiceInicial == 0) {
+                        pontosARemover.add(0);
+                    }
+
+                    for (int j = indiceInicial + 1; j < indiceFinal; j++) {
+                        pontosARemover.add(j);
+                    }
+
+                    if (indiceFinal == pontos.size() - 1) {
+                        pontosARemover.add(pontos.size() - 1);
+                    }
+                }
+
+                indiceInicial = i;
+                indiceFinal = i;
+            }
+        }
+
+        if (indiceFinal - indiceInicial - 1 > 0) {
+            if (indiceInicial == 0) {
+                pontosARemover.add(0);
+            }
+
+            for (int j = indiceInicial + 1; j < indiceFinal; j++) {
+                pontosARemover.add(j);
+            }
+
+            if (indiceFinal == pontos.size() - 1) {
+                pontosARemover.add(pontos.size() - 1);
+            }
+        } else if (indiceInicial != indiceFinal && indiceFinal == pontos.size() - 1) {
+            pontosARemover.add(pontos.size() - 1);
+        }
+        
+        Collections.reverse(pontosARemover);
+        
+        pontosARemover.stream().forEach((integer) -> {
+            pontos.remove(integer.intValue());
+        });
+    }
+
     public static int getIntersecoes(Set<Poligono> poligonos, int x, int y) {
         int contagem = 0;
         for (Poligono poligono : poligonos) {
@@ -75,7 +132,7 @@ public class Poligono {
 
         return contagem;
     }
-    
+
     public static boolean hasIntersecao(Set<Poligono> poligonos, int x, int y) {
         for (Poligono poligono : poligonos) {
             for (Reta reta : poligono.getRetas()) {
@@ -86,7 +143,7 @@ public class Poligono {
                 }
             }
         }
-        
+
         return false;
     }
 }
