@@ -13,7 +13,7 @@ public class Reta {
     public int yMinimo() {
         return Integer.min(pontoInicial.getY(), pontoFinal.getY());
     }
-    
+   
     public int yMaximo() {
         return Integer.max(pontoInicial.getY(), pontoFinal.getY());
     }
