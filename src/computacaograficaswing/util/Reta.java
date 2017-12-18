@@ -1,44 +1,50 @@
 package computacaograficaswing.util;
 
-import java.util.Set;
-
 public class Reta {
     
-    private Set<Ponto> pontos;
+    private final Ponto pontoInicial;
+    private final Ponto pontoFinal;
 
-    public Reta(Set<Ponto> reta) {
-        this.pontos = reta;
-    }
-
-    public Set<Ponto> getPontos() {
-        return pontos;
-    }
-
-    public void setPontos(Set<Ponto> pontos) {
-        this.pontos = pontos;
+    public Reta(Ponto ponto1, Ponto ponto2) {      
+        pontoInicial = ponto1;
+        pontoFinal = ponto2;
     }
     
-    public int getYMinimo() {
-        int yMin = Integer.MAX_VALUE;
-        
-        for (Ponto ponto : pontos) {
-            int aux = ponto.getY();
-            if (aux < yMin)
-                yMin = aux;
-        }
-        
-        return yMin;
+    public int yMinimo() {
+        return Integer.min(pontoInicial.getY(), pontoFinal.getY());
     }
     
-    public int getYMaximo() {
-        int yMax = Integer.MAX_VALUE;
-        
-        for (Ponto ponto : pontos) {
-            int aux = ponto.getY();
-            if (aux < yMax)
-                yMax = aux;
+    public int yMaximo() {
+        return Integer.max(pontoInicial.getY(), pontoFinal.getY());
+    }
+    
+    public int xParaYMin() {
+        if (pontoInicial.getY() < pontoFinal.getY()) {
+            return pontoInicial.getX();
+        } else {
+            return pontoFinal.getX();
         }
+    }
+    
+    public double coeficienteAngular() {
+        int deltaX = pontoFinal.getX() - pontoInicial.getX();
+        int deltaY = pontoFinal.getY() - pontoInicial.getY();
+
+        double coeficienteAngular = (double) deltaY / (double) deltaX;
+        return coeficienteAngular;
+    }
+
+    public Ponto getPontoInicial() {
+        return pontoInicial;
+    }
+
+    public Ponto getPontoFinal() {
+        return pontoFinal;
+    }
+    
+    public static int intersecaoComY(int yEscolhido, Reta reta) {
+        double coeficienteNovo = 1 / reta.coeficienteAngular();
         
-        return yMax;
+        return (int)Math.round(coeficienteNovo * (yEscolhido - reta.yMinimo()) + reta.xParaYMin());
     }
 }

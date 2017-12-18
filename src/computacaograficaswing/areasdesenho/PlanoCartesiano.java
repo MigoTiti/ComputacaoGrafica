@@ -1,9 +1,13 @@
 package computacaograficaswing.areasdesenho;
 
+import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_RETANGULO;
+import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
+import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.framebuffer.FrameBufferPlanoCartesiano;
 import computacaograficaswing.util.Ponto;
 import javafx.geometry.Insets;
-import javafx.scene.input.MouseEvent;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.ColumnConstraints;
@@ -11,27 +15,31 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
-public class PlanoCartesiano extends AreaDesenho{
+public abstract class PlanoCartesiano extends AreaDesenho{
 
+    protected GridPane gridPane;
     protected GridPane primeiroQuadrante;
     protected GridPane segundoQuadrante;
     protected GridPane terceiroQuadrante;
     protected GridPane quartoQuadrante;
 
-    protected GridPane inicializarPlano() {
-        GridPane gridPane = new GridPane();
-
+    @Override
+    protected Group inicializarPlano() {
+        gridPane = new GridPane();
+        gridPane.setAlignment(Pos.CENTER);
+        
         primeiroQuadrante = new GridPane();
         segundoQuadrante = new GridPane();
         terceiroQuadrante = new GridPane();
         quartoQuadrante = new GridPane();
 
-        primeiroQuadrante.setStyle("-fx-border-color: blue; -fx-border-width: 2 1 1 1; -fx-padding: 0;");
-        segundoQuadrante.setStyle("-fx-border-color: blue; -fx-border-width: 2 1 1 2.5; -fx-padding: 0;");
-        terceiroQuadrante.setStyle("-fx-border-color: blue; -fx-border-width: 1 1 2 2.5; -fx-padding: 0;");
-        quartoQuadrante.setStyle("-fx-border-color: blue; -fx-border-width: 1 1 2 1; -fx-padding: 0;");
-
+        primeiroQuadrante.setGridLinesVisible(true);
+        segundoQuadrante.setGridLinesVisible(true);
+        terceiroQuadrante.setGridLinesVisible(true);
+        quartoQuadrante.setGridLinesVisible(true);
+        
         for (int i = 0; i < ORDEM / 2; i++) {
             primeiroQuadrante.getColumnConstraints().add(new ColumnConstraints(TAMANHO_CELULA));
             segundoQuadrante.getColumnConstraints().add(new ColumnConstraints(TAMANHO_CELULA));
@@ -44,17 +52,20 @@ public class PlanoCartesiano extends AreaDesenho{
             quartoQuadrante.getRowConstraints().add(new RowConstraints(TAMANHO_CELULA));
         }
 
-        primeiroQuadrante.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, new Insets(0.5))));
-        segundoQuadrante.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, new Insets(0.5))));
-        terceiroQuadrante.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, new Insets(0.5))));
-        quartoQuadrante.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, new Insets(0.5))));
+        primeiroQuadrante.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+        segundoQuadrante.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+        terceiroQuadrante.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+        quartoQuadrante.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+        gridPane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+        gridPane.setVgap(2);
+        gridPane.setHgap(2);
 
         gridPane.add(segundoQuadrante, 0, 0);
         gridPane.add(primeiroQuadrante, 1, 0);
         gridPane.add(terceiroQuadrante, 0, 1);
         gridPane.add(quartoQuadrante, 1, 1);
 
-        gridPane.setOnDragDetected((MouseEvent event) -> {
+        gridPane.setOnDragDetected(event -> {
             gridPane.startFullDrag();
             event.consume();
         });
@@ -69,8 +80,8 @@ public class PlanoCartesiano extends AreaDesenho{
         }
 
         frameBuffer = new FrameBufferPlanoCartesiano(primeiroQuadrante, segundoQuadrante, terceiroQuadrante, quartoQuadrante);
-
-        return gridPane;
+        
+        return new Group(gridPane);
     }
 
     protected void desenharPonto(Ponto p) {
@@ -96,6 +107,34 @@ public class PlanoCartesiano extends AreaDesenho{
 
             ((FrameBufferPlanoCartesiano)frameBuffer).desenharPonto(4, gerarRect(corBressenham), x, yNovo);
         }
+    }
+
+    @Override
+    protected Rectangle gerarRect(Color cor) {
+        Rectangle rect = new Rectangle(TAMANHO_RETANGULO, TAMANHO_RETANGULO, cor);
+        rect.setOnMouseClicked(event -> {
+            if (rect.getFill().equals(corPadrao)) {
+                rect.setFill(corSelecionada);
+                frameBuffer.getPontosDesenhados().add(rect);
+            } else {
+                rect.setFill(corPadrao);
+                frameBuffer.getPontosDesenhados().remove(rect);
+            }
+        });
+
+        rect.setOnMouseDragOver(event -> {
+            if (corSelecionada.equals(corPadrao) && !rect.getFill().equals(corPadrao)) {
+                rect.setFill(corPadrao);
+                frameBuffer.getPontosDesenhados().remove(rect);
+            } else if (corSelecionada.equals(corPadrao) && rect.getFill().equals(corPadrao)) {
+
+            } else {
+                rect.setFill(corSelecionada);
+                frameBuffer.getPontosDesenhados().add(rect);
+            }
+        });
+
+        return rect;
     }
 
     protected void aplicarBuffer() {

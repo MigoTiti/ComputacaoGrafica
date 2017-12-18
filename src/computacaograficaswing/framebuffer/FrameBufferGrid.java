@@ -56,7 +56,7 @@ public class FrameBufferGrid extends FrameBufferBase {
         }
     }
 
-    public void desenharPonto(Color cor, int x, int y) {
+    private void desenharPonto(Color cor, int x, int y) {
         gridPaneMatriz[x][y].setFill(cor);
         pontosDesenhados.add(gridPaneMatriz[x][y]);
     }

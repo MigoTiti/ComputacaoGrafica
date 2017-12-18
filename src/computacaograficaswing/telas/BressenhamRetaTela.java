@@ -16,7 +16,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -124,12 +123,7 @@ public class BressenhamRetaTela extends PlanoCartesiano {
         hboxTop.getChildren().addAll(btn, helpText, x1Campo, helpText2, y1Campo, helpText3, x2Campo, helpText4, y2Campo, helpText5, calcularButton, limparTudoBtn, colorPicker);
 
         root.setTop(hboxTop);
-        root.setCenter(this.inicializarPlano());
-
-        if (PlanoCartesiano.WIDTH_PLANO < ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT) {
-            root.setLeft(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - PlanoCartesiano.WIDTH_PLANO) / 2 + 20, PlanoCartesiano.HEIGHT_PLANO, Color.WHITE));
-            root.setRight(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - PlanoCartesiano.WIDTH_PLANO) / 2 + 20, PlanoCartesiano.HEIGHT_PLANO, Color.WHITE));
-        }
+        root.setCenter(inicializarPlano());
         
         fxContainer.setScene(new Scene(root));
     }

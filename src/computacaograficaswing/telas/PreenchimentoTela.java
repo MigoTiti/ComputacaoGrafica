@@ -2,17 +2,21 @@ package computacaograficaswing.telas;
 
 import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
-import computacaograficaswing.areasdesenho.AreaDesenho;
-import static computacaograficaswing.areasdesenho.AreaDesenho.ORDEM;
 import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_CELULA;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
+import computacaograficaswing.areasdesenho.PlanoGrid;
 import computacaograficaswing.util.BressenhamReta;
 import computacaograficaswing.framebuffer.FrameBufferGrid;
 import computacaograficaswing.util.Poligono;
 import computacaograficaswing.util.Ponto;
 import computacaograficaswing.util.Reta;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -20,30 +24,21 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class PreenchimentoTela extends AreaDesenho {
+public class PreenchimentoTela extends PlanoGrid {
 
     private boolean preenchimentoAtivado;
     private boolean poligonoAtivado;
     private boolean poligonoEmConstrucao;
     private Ponto pontoInicialReta;
     private Ponto pontoInicialRetaAtual;
-    private Set<Ponto> retaAtual;
-    private GridPane gridPane;
     private Poligono poligonoAtual;
     private Set<Poligono> poligonos;
-
-    private Rectangle[][] gridPaneMatriz;
 
     public static Color corPreenchimento = Color.BLACK;
 
@@ -51,7 +46,7 @@ public class PreenchimentoTela extends AreaDesenho {
         ComputacaoGraficaSwing.mudarTitulo("Preenchimento");
         Button btn = new Button();
         btn.setText("Voltar");
-        btn.setOnAction((ActionEvent) -> {
+        btn.setOnAction(event -> {
             ComputacaoGraficaSwing.createScene();
         });
 
@@ -74,7 +69,7 @@ public class PreenchimentoTela extends AreaDesenho {
                 pontoInicialReta = null;
                 poligonoAtual = null;
                 poligonoEmConstrucao = false;
-                retaAtual = null;
+                gridPane.setGridLinesVisible(false);
                 desenharForma.setTextFill(Color.RED);
             } else {
                 gridPane.setGridLinesVisible(true);
@@ -124,7 +119,6 @@ public class PreenchimentoTela extends AreaDesenho {
             limparTela();
             poligonoAtual = null;
             poligonos = null;
-            retaAtual = null;
             pontoInicialReta = null;
             pontoInicialRetaAtual = null;
         });
@@ -142,15 +136,7 @@ public class PreenchimentoTela extends AreaDesenho {
         hboxTop.getChildren().addAll(btn, preencherBalde, desenharForma, preencherVarredura, limparTudoBtn, colorPicker, colorPicker2);
 
         root.setTop(hboxTop);
-
-        inicializarPlano();
-
-        root.setCenter(gridPane);
-
-        if (WIDTH_PLANO < ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT) {
-            root.setLeft(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - WIDTH_PLANO) / 2 + 20, HEIGHT_PLANO, Color.WHITE));
-            root.setRight(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - WIDTH_PLANO) / 2 + 20, HEIGHT_PLANO, Color.WHITE));
-        }
+        root.setCenter(inicializarPlano());
 
         poligonos = new HashSet<>();
 
@@ -158,50 +144,66 @@ public class PreenchimentoTela extends AreaDesenho {
     }
 
     protected void preencherPorVarredura() {
-        boolean preencher = false;
-        for (int i = 0; i < gridPaneMatriz.length; i++) {
-            for (int j = 0; j < gridPaneMatriz.length; j++) {
-                int contagem = Poligono.getIntersecoes(poligonos, j, i);
-                
-                if (contagem % 2 != 0 && Poligono.getIntersecoes(poligonos, j - 1, i) == 0) {
-                    preencher = !preencher;
-                }
-                
-                if (contagem == 0 && preencher && !Poligono.hasIntersecao(poligonos, j, i)) {
-                    desenharPonto(corPreenchimento, gridPaneMatriz[j][i]);
-                }
-            }
-            preencher = false;
-        }
-    }
+        Set<Reta> retas = new LinkedHashSet<>();
 
-    protected void inicializarPlano() {
-        gridPane = new GridPane();
-        gridPane.setStyle("-fx-border-color: black; -fx-border-width: 1 1 1 1; -fx-padding: 0;");
-
-        for (int i = 0; i < ORDEM; i++) {
-            gridPane.getColumnConstraints().add(new ColumnConstraints(TAMANHO_CELULA));
-            gridPane.getRowConstraints().add(new RowConstraints(TAMANHO_CELULA));
-        }
-
-        gridPane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, new Insets(0.5))));
-
-        gridPane.setOnDragDetected((MouseEvent event) -> {
-            gridPane.startFullDrag();
-            event.consume();
+        poligonos.stream().forEach((poligono) -> {
+            retas.addAll(poligono.getRetas());
         });
 
-        gridPaneMatriz = new Rectangle[ORDEM][ORDEM];
+        for (int yVarredura = 0; yVarredura < gridPaneMatriz.length; yVarredura++) {
+            List<Integer> intersecoes = new ArrayList<>();
 
-        for (int i = 0; i < ORDEM; i++) {
-            for (int j = 0; j < ORDEM; j++) {
-                Rectangle rect = gerarRect(corPadrao);
-                gridPane.add(rect, i, j);
-                gridPaneMatriz[i][j] = rect;
+            for (Reta reta : retas) {
+                if (yVarredura >= reta.yMinimo() && yVarredura <= reta.yMaximo()) {
+                    int intersecao = Reta.intersecaoComY(yVarredura, reta);
+
+                    if (intersecao >= 0 && intersecao < gridPaneMatriz.length) {
+                        intersecoes.add(intersecao);
+                    }
+                }
             }
-        }
 
-        frameBuffer = new FrameBufferGrid(gridPaneMatriz);
+            Collections.sort(intersecoes);
+
+            System.out.print("\nLinha " + yVarredura + ", numero de intersecoes = " + intersecoes.size() + "; " + Arrays.toString(intersecoes.toArray()));
+            
+            Set<Integer> pontosASeremRemovidos = new HashSet<>();
+            
+            intersecoes.stream().forEach((Integer intersecao) -> {
+                int contagem = Collections.frequency(intersecoes, intersecao);
+                if (contagem > 1) {
+                    int contagemPontosMaximos = 0;
+                    
+                    for (Reta reta : retas) {
+                        if (intersecao.equals(reta.xParaYMin()))
+                            contagemPontosMaximos++;
+                    }
+                    
+                    System.out.print(", pontos máximos = " + contagemPontosMaximos);
+                    
+                    if (contagemPontosMaximos == 1)
+                        pontosASeremRemovidos.add(intersecao);
+                }
+            });
+            
+            pontosASeremRemovidos.stream().forEach((pontoASerRemovido) -> {
+                intersecoes.remove(pontoASerRemovido);
+            });
+            
+            if (intersecoes.size() % 2 == 0) {
+                for (int i = 0; i < intersecoes.size() - 1; i += 2) {
+                    for (int j = intersecoes.get(i); j <= intersecoes.get(i + 1); j++) {
+                        desenharPonto(corPreenchimento, j, yVarredura);
+                    }
+                }
+            }
+            
+            retas.stream().forEach((reta) -> {
+                (new BressenhamReta().aplicarBressenham(reta.getPontoInicial(), reta.getPontoFinal())).forEach((ponto -> {
+                    desenharPonto(corSelecionada, ponto);
+                }));
+            });
+        }
     }
 
     private void preenchimentoRecursivo(Color corInicial, Color corPreenchimento, int x, int y) {
@@ -214,7 +216,6 @@ public class PreenchimentoTela extends AreaDesenho {
     protected Rectangle gerarRect(Color cor) {
         Rectangle rect = new Rectangle(TAMANHO_CELULA, TAMANHO_CELULA, cor);
 
-        rect.setStyle("-fx-padding: 0;");
         rect.setOnMouseClicked((MouseEvent event) -> {
             if (preenchimentoAtivado) {
                 preenchimentoRecursivo(((Color) rect.getFill()), corPreenchimento, (int) GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
@@ -222,12 +223,14 @@ public class PreenchimentoTela extends AreaDesenho {
                 if (poligonoEmConstrucao) {
                     Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     if (!p.equals(pontoInicialRetaAtual)) {
-                        retaAtual = new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p);
-                        retaAtual.forEach((ponto) -> {
-                            desenharPonto(corSelecionada, gridPaneMatriz[ponto.getX()][ponto.getY()]);
+                        (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
+                            desenharPonto(corSelecionada, ponto);
                         });
 
-                        Reta aux = new Reta(retaAtual);
+                        desenharPonto(Color.RED, pontoInicialReta);
+                        desenharPonto(Color.RED, p);
+                        
+                        Reta aux = new Reta(new Ponto(pontoInicialRetaAtual.getX(), pontoInicialRetaAtual.getY()), new Ponto(p.getX(), p.getY()));
                         poligonoAtual.getRetas().add(aux);
 
                         if (p.equals(pontoInicialReta)) {
@@ -243,7 +246,7 @@ public class PreenchimentoTela extends AreaDesenho {
                     poligonoEmConstrucao = true;
                     pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     pontoInicialRetaAtual = pontoInicialReta;
-                    desenharPonto(corSelecionada, rect);
+                    desenharPonto(Color.RED, rect);
                 }
             } else if (rect.getFill().equals(corPadrao)) {
                 rect.setFill(corSelecionada);
@@ -267,15 +270,5 @@ public class PreenchimentoTela extends AreaDesenho {
         });
 
         return rect;
-    }
-
-    private void desenharPonto(Color cor, Rectangle rect) {
-        rect.setFill(cor);
-
-        if (!cor.equals(corPadrao)) {
-            frameBuffer.getPontosDesenhados().add(rect);
-        } else {
-            frameBuffer.getPontosDesenhados().remove(rect);
-        }
     }
 }

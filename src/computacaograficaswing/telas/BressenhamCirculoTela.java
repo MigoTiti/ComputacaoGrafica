@@ -10,66 +10,71 @@ import java.util.HashSet;
 import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public class BressenhamCirculoTela extends PlanoCartesiano{
+public class BressenhamCirculoTela extends PlanoCartesiano {
+
     private TextField xCampo;
     private TextField yCampo;
     private TextField raioCampo;
-    
+
     private void aplicarBressenhamCirculo(Ponto centro, int raio) {
         int deslocamentoX = centro.getX();
         int deslocamentoY = centro.getY();
-        
+
         int x = 0;
         int y = raio;
         int p = 1 - raio;
-        
+
         Set<Ponto> pontos = new HashSet<>();
         pontos.add(new Ponto(x, y));
-        
-        while (x < y) {            
+
+        while (x < y) {
             x++;
-            if (p < 0)
+            if (p < 0) {
                 p += (2 * x) + 3;
-            else { 
+            } else {
                 y--;
                 p += (2 * x) - (2 * y) + 5;
             }
-            
+
             pontos.add(new Ponto(x, y));
         }
-        
+
         reflexao(pontos);
-        
-        if (deslocamentoX > 0)
+
+        if (deslocamentoX > 0) {
             pontos.stream().forEach((ponto) -> {
                 ponto.setX(ponto.getX() + deslocamentoX);
-        });
-        
-        if (deslocamentoY > 0)
+            });
+        }
+
+        if (deslocamentoY > 0) {
             pontos.stream().forEach((ponto) -> {
                 ponto.setY(ponto.getY() + deslocamentoY);
-        });
-        
+            });
+        }
+
         pontos.stream().forEach((ponto) -> {
             desenharPonto(ponto);
         });
-        
+
         aplicarBuffer();
     }
-    
-    private void reflexao(Set<Ponto> pontos) {  
+
+    private void reflexao(Set<Ponto> pontos) {
         Set<Ponto> aux = new HashSet<>(pontos);
-        
+
         aux.stream().map((ponto) -> {
             pontos.add(new Ponto(-ponto.getX(), ponto.getY()));
             return ponto;
@@ -92,7 +97,7 @@ public class BressenhamCirculoTela extends PlanoCartesiano{
             pontos.add(new Ponto(-ponto.getY(), -ponto.getX()));
         });
     }
-    
+
     public void iniciarTela() {
         ComputacaoGraficaSwing.mudarTitulo("Algoritmo de Bressenham (círculo)");
         Button btn = new Button();
@@ -100,9 +105,9 @@ public class BressenhamCirculoTela extends PlanoCartesiano{
         btn.setOnAction((ActionEvent) -> {
             ComputacaoGraficaSwing.createScene();
         });
-        
+
         BorderPane root = new BorderPane();
-        
+
         HBox hboxTop = new HBox();
         hboxTop.setPadding(new Insets(15, 12, 15, 12));
         hboxTop.setSpacing(10);
@@ -121,7 +126,7 @@ public class BressenhamCirculoTela extends PlanoCartesiano{
         raioCampo.setPrefWidth(100);
         raioCampo.setMaxWidth(100);
         raioCampo.setMinWidth(100);
-        
+
         Text helpText = new Text("Ponto: (");
         helpText.setFill(Color.BLACK);
         helpText.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
@@ -131,35 +136,29 @@ public class BressenhamCirculoTela extends PlanoCartesiano{
         Text helpText3 = new Text(")  Raio: ");
         helpText3.setFill(Color.BLACK);
         helpText3.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
-        
+
         Button calcularButton = new Button();
         calcularButton.setText("Desenhar círculo");
         calcularButton.setOnAction((ActionEvent) -> {
             aplicarBressenhamCirculo(new Ponto(Integer.parseInt(xCampo.getText()), Integer.parseInt(yCampo.getText())), Integer.parseInt(raioCampo.getText()));
         });
-        
+
         Button limparTudoBtn = new Button();
         limparTudoBtn.setText("Limpar tela");
         limparTudoBtn.setOnAction((ActionEvent) -> {
             limparTela();
         });
-        
+
         ColorPicker colorPicker = new ColorPicker(PlanoCartesiano.corSelecionada);
         colorPicker.setOnAction((ActionEvent event) -> {
             PlanoCartesiano.corSelecionada = colorPicker.getValue();
         });
-        
+
         hboxTop.getChildren().addAll(btn, helpText, xCampo, helpText2, yCampo, helpText3, raioCampo, calcularButton, limparTudoBtn, colorPicker);
-        
+
         root.setTop(hboxTop);
-        root.setCenter(this.inicializarPlano());
-        
-        if (PlanoCartesiano.WIDTH_PLANO < ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT) {
-            root.setLeft(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - PlanoCartesiano.WIDTH_PLANO)/2 + 20, PlanoCartesiano.HEIGHT_PLANO, Color.WHITE));
-            root.setRight(new Rectangle((ComputacaoGraficaSwing.JFXPANEL_WIDTH_INT - PlanoCartesiano.WIDTH_PLANO)/2 + 20, PlanoCartesiano.HEIGHT_PLANO, Color.WHITE));
-        }
+        root.setCenter(inicializarPlano());
 
         fxContainer.setScene(new Scene(root));
     }
 }
-
