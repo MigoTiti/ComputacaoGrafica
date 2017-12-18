@@ -1,5 +1,7 @@
 package computacaograficaswing.util;
 
+import java.util.Set;
+
 public class Reta {
     
     private final Ponto pontoInicial;
@@ -8,6 +10,10 @@ public class Reta {
     public Reta(Ponto ponto1, Ponto ponto2) {      
         pontoInicial = ponto1;
         pontoFinal = ponto2;
+    }
+    
+    public Set<Ponto> getPontos() {
+        return new BressenhamReta().aplicarBressenham(pontoInicial, pontoFinal);
     }
     
     public int yMinimo() {
@@ -46,5 +52,11 @@ public class Reta {
         double coeficienteNovo = 1 / reta.coeficienteAngular();
         
         return (int)Math.round(coeficienteNovo * (yEscolhido - reta.yMinimo()) + reta.xParaYMin());
+    }
+    
+    public static int intersecaoComX(int xEscolhido, Reta reta) {
+        double coeficienteNovo = 1 / reta.coeficienteAngular();
+        
+        return (int)Math.round(((xEscolhido - reta.xParaYMin())/coeficienteNovo) + reta.yMinimo());
     }
 }

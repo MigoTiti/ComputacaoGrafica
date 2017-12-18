@@ -102,27 +102,66 @@ public class RecorteLinhasTela extends PlanoGrid {
 
     private void csClip() {
         retas.stream().forEach((reta) -> {
-            csClip(reta);
+            Reta retaFinal = csClip(reta);
+            if (retaFinal != null) {
+                retaFinal.getPontos().forEach((ponto) -> {
+                    desenharPonto(corSelecionada, ponto);
+                });
+            }
         });
     }
 
-    private void csClip(Reta reta) {
+    private Reta csClip(Reta reta) {
         Ponto p1 = reta.getPontoInicial();
         Ponto p2 = reta.getPontoFinal();
-        int codigoInicio = gerarCodigo(p1);
-        int codigoFim = gerarCodigo(p2);
+        boolean[] codigoInicio = gerarCodigo(p1);
+        boolean[] codigoFim = gerarCodigo(p2);
 
-        if ((codigoInicio | codigoFim) == 0b0000) {
+        if (!or(codigoInicio, codigoFim)) {
             System.out.println("Totalmente dentro");
-        } else if ((codigoInicio & codigoFim) != 0b0000) {
+            return reta;
+        } else if (!and(codigoInicio, codigoFim)) {
             System.out.println("Totalmente fora");
+            return null;
         } else {
+            int bitDiferente = bitDiferente(codigoInicio, codigoFim);
             
+            switch (bitDiferente) {
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default:
+                    break;
+            }
         }
+        
+        return null;
     }
 
-    private int gerarCodigo(Ponto p) {
-        int codigo = 0b0000;
+    private int bitDiferente(boolean[] codigo1, boolean[] codigo2) {
+        for (int i = 0; i < codigo1.length; i++) {
+            if (codigo1[i] != codigo2[i])
+                return i;
+        }
+        
+        return -1;
+    }
+    
+    private boolean or(boolean[] codigo1, boolean[] codigo2) {
+        return ((codigo1[0] || codigo2[0]) || (codigo1[1] || codigo2[1]) || (codigo1[2] || codigo2[2]) || (codigo1[3] || codigo2[3]));
+    }
+    
+    private boolean and(boolean[] codigo1, boolean[] codigo2) {
+        return ((codigo1[0] && codigo2[0]) && (codigo1[1] && codigo2[1]) && (codigo1[2] && codigo2[2]) && (codigo1[3] && codigo2[3]));
+    }
+    
+    private boolean[] gerarCodigo(Ponto p) {
+        boolean[] codigo = new boolean[]{false, false, false, false};
 
         int yMax = areaDeRecorte.yMax();
         int yMin = areaDeRecorte.yMin();
@@ -130,26 +169,26 @@ public class RecorteLinhasTela extends PlanoGrid {
         int xMin = areaDeRecorte.xMin();
 
         if (sinal(yMax - p.getY()) == 1) {
-            codigo += 0b1000;
+            codigo[3] = true;
         }
 
         if (sinal(p.getY() - yMin) == 1) {
-            codigo += 0b0100;
+            codigo[2] = true;
         }
 
         if (sinal(xMax - p.getX()) == 1) {
-            codigo += 0b0010;
+            codigo[1] = true;
         }
 
         if (sinal(p.getX() - xMin) == 1) {
-            codigo += 0b0001;
+            codigo[0] = true;
         }
 
         return codigo;
     }
 
     private int sinal(int n) {
-        return (n >= 0 ? 0 : 1);
+        return n >= 0 ? 0 : 1;
     }
 
     @Override
