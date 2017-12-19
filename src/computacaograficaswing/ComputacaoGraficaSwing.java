@@ -5,6 +5,7 @@ import computacaograficaswing.telas.BressenhamCirculoTela;
 import computacaograficaswing.telas.PreenchimentoTela;
 import computacaograficaswing.areasdesenho.PlanoCartesiano;
 import computacaograficaswing.telas.RecorteLinhasTela;
+import computacaograficaswing.telas.RecortePoligonosTela;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javafx.application.Platform;
@@ -93,7 +94,7 @@ public class ComputacaoGraficaSwing extends JApplet {
         
         Button recortePoligonosButton = new Button("Recorte de polígonos");
         recortePoligonosButton.setOnAction((ActionEvent) -> {
-            //new RecorteLinhasTela().iniciarTela();
+            new RecortePoligonosTela().iniciarTela();
         });
 
         HBox hboxTop = new HBox();
