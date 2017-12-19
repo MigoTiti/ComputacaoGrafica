@@ -74,6 +74,11 @@ public class RecorteLinhasTela extends PlanoGrid {
             csClip();
         });
 
+        Button cortarPontoMedio = new Button("Cortar por ponto médio");
+        cortarPontoMedio.setOnAction(event -> {
+            pontoMedioClip();
+        });
+
         Button limparTudoBtn = new Button("Limpar tela");
         limparTudoBtn.setOnAction(event -> {
             limparTela();
@@ -89,7 +94,7 @@ public class RecorteLinhasTela extends PlanoGrid {
             corPreenchimento = colorPicker2.getValue();
         });
 
-        hboxTop.getChildren().addAll(btn, escolherAreaRecorte, desenharReta, cortarCSClip, limparTudoBtn, colorPicker, colorPicker2);
+        hboxTop.getChildren().addAll(btn, escolherAreaRecorte, desenharReta, cortarCSClip, cortarPontoMedio, limparTudoBtn, colorPicker, colorPicker2);
 
         root.setTop(hboxTop);
         root.setCenter(inicializarPlano());
@@ -100,11 +105,62 @@ public class RecorteLinhasTela extends PlanoGrid {
         fxContainer.setScene(new Scene(root));
     }
 
+    private void pontoMedioClip() {
+        retas.stream().forEach((reta) -> {
+            limparReta(reta);
+        });
+
+        retas.stream().forEach((reta) -> {
+            Reta retaFinal = pontoMedioClip(reta);
+            if (retaFinal != null) {
+                desenharReta(corSelecionada, retaFinal);
+            }
+        });
+    }
+
+    private Reta pontoMedioClip(Reta reta) {
+        Ponto p1 = reta.getPontoInicial();
+        Ponto p2 = reta.getPontoFinal();
+        boolean[] codigoInicio = gerarCodigo(p1);
+        boolean[] codigoFim = gerarCodigo(p2);
+
+        if (!or(codigoInicio, codigoFim)) {
+            return reta;
+        } else if (and(codigoInicio, codigoFim)) {
+            return null;
+        } else {
+            int xNovo = Math.round((reta.getPontoInicial().getX() + reta.getPontoFinal().getX()) / 2);
+            int yNovo = Math.round((reta.getPontoInicial().getY() + reta.getPontoFinal().getY()) / 2);
+
+            Ponto p = new Ponto(xNovo, yNovo);
+
+            if (p.getX() == p1.getX() || p.getX() == p2.getX() || p.getY() == p1.getY() || p.getY() == p2.getY())
+                return null; 
+            
+            Reta reta1 = pontoMedioClip(new Reta(reta.getPontoInicial(), p));
+            Reta reta2 = pontoMedioClip(new Reta(p, reta.getPontoFinal()));
+            
+            if (reta1 != null) {
+                if (reta2 != null) {
+                    reta = new Reta(reta1.getPontoInicial(), reta2.getPontoFinal());
+                } else {
+                    reta = new Reta(reta1.getPontoInicial(), reta1.getPontoFinal());
+                }
+            } else {
+                if (reta2 != null) {
+                    reta = new Reta(reta2.getPontoInicial(), reta2.getPontoFinal());
+                }
+            }
+        }
+
+        return reta;
+    }
+
     private void csClip() {
         retas.stream().forEach((reta) -> {
             limparReta(reta);
         });
-        
+
         retas.stream().forEach((reta) -> {
             Reta retaFinal = csClip(reta);
             if (retaFinal != null) {
@@ -115,18 +171,20 @@ public class RecorteLinhasTela extends PlanoGrid {
 
     private void limparReta(Reta reta) {
         reta.getPontos().forEach(ponto -> {
-            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corSelecionada))
+            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corSelecionada)) {
                 desenharPonto(corPadrao, ponto);
+            }
         });
     }
-    
+
     private void desenharReta(Color cor, Reta reta) {
         reta.getPontos().forEach(ponto -> {
-            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao))
+            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
                 desenharPonto(cor, ponto);
+            }
         });
     }
-    
+
     private Reta csClip(Reta reta) {
         Ponto p1 = reta.getPontoInicial();
         Ponto p2 = reta.getPontoFinal();
