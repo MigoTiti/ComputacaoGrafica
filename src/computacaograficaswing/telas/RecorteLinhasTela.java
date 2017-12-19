@@ -102,15 +102,31 @@ public class RecorteLinhasTela extends PlanoGrid {
 
     private void csClip() {
         retas.stream().forEach((reta) -> {
+            limparReta(reta);
+        });
+        
+        retas.stream().forEach((reta) -> {
             Reta retaFinal = csClip(reta);
             if (retaFinal != null) {
-                retaFinal.getPontos().forEach((ponto) -> {
-                    desenharPonto(corSelecionada, ponto);
-                });
+                desenharReta(corSelecionada, retaFinal);
             }
         });
     }
 
+    private void limparReta(Reta reta) {
+        reta.getPontos().forEach(ponto -> {
+            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corSelecionada))
+                desenharPonto(corPadrao, ponto);
+        });
+    }
+    
+    private void desenharReta(Color cor, Reta reta) {
+        reta.getPontos().forEach(ponto -> {
+            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao))
+                desenharPonto(cor, ponto);
+        });
+    }
+    
     private Reta csClip(Reta reta) {
         Ponto p1 = reta.getPontoInicial();
         Ponto p2 = reta.getPontoFinal();
@@ -118,48 +134,71 @@ public class RecorteLinhasTela extends PlanoGrid {
         boolean[] codigoFim = gerarCodigo(p2);
 
         if (!or(codigoInicio, codigoFim)) {
-            System.out.println("Totalmente dentro");
             return reta;
-        } else if (!and(codigoInicio, codigoFim)) {
-            System.out.println("Totalmente fora");
+        } else if (and(codigoInicio, codigoFim)) {
             return null;
         } else {
             int bitDiferente = bitDiferente(codigoInicio, codigoFim);
-            
-            switch (bitDiferente) {
-                case 0:
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                default:
-                    break;
+
+            Ponto p = intersecao(bitDiferente, reta);
+
+            if (dentro(reta.getPontoInicial())) {
+                reta = csClip(new Reta(p, reta.getPontoInicial()));
+            } else {
+                reta = csClip(new Reta(reta.getPontoFinal(), p));
             }
         }
-        
-        return null;
+
+        return reta;
+    }
+
+    private Ponto intersecao(int bit, Reta reta) {
+        switch (bit) {
+            case 0: {
+                int x = areaDeRecorte.xMin();
+                return new Ponto(x, Reta.intersecaoComX(x, reta));
+            }
+            case 1: {
+                int x = areaDeRecorte.xMax();
+                return new Ponto(x, Reta.intersecaoComX(x, reta));
+            }
+            case 2: {
+                int y = areaDeRecorte.yMin();
+                return new Ponto(Reta.intersecaoComY(y, reta), y);
+            }
+            case 3: {
+                int y = areaDeRecorte.yMax();
+                return new Ponto(Reta.intersecaoComY(y, reta), y);
+            }
+            default:
+                return null;
+        }
+    }
+
+    private boolean dentro(Ponto p) {
+        boolean[] codigoPonto = gerarCodigo(p);
+
+        return !(codigoPonto[0] || codigoPonto[1] || codigoPonto[2] || codigoPonto[3]);
     }
 
     private int bitDiferente(boolean[] codigo1, boolean[] codigo2) {
         for (int i = 0; i < codigo1.length; i++) {
-            if (codigo1[i] != codigo2[i])
+            if (codigo1[i] != codigo2[i]) {
                 return i;
+            }
         }
-        
+
         return -1;
     }
-    
+
     private boolean or(boolean[] codigo1, boolean[] codigo2) {
         return ((codigo1[0] || codigo2[0]) || (codigo1[1] || codigo2[1]) || (codigo1[2] || codigo2[2]) || (codigo1[3] || codigo2[3]));
     }
-    
+
     private boolean and(boolean[] codigo1, boolean[] codigo2) {
-        return ((codigo1[0] && codigo2[0]) && (codigo1[1] && codigo2[1]) && (codigo1[2] && codigo2[2]) && (codigo1[3] && codigo2[3]));
+        return ((codigo1[0] && codigo2[0]) || (codigo1[1] && codigo2[1]) || (codigo1[2] && codigo2[2]) || (codigo1[3] && codigo2[3]));
     }
-    
+
     private boolean[] gerarCodigo(Ponto p) {
         boolean[] codigo = new boolean[]{false, false, false, false};
 
