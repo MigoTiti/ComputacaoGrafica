@@ -40,6 +40,8 @@ public class PreenchimentoTela extends PlanoGrid {
     private Poligono poligonoAtual;
     private Set<Poligono> poligonos;
 
+    private Set<Ponto> pontosTemp;
+    
     public static Color corPreenchimento = Color.BLACK;
 
     public void iniciarTela() {
@@ -139,7 +141,8 @@ public class PreenchimentoTela extends PlanoGrid {
         root.setCenter(inicializarPlano());
 
         poligonos = new HashSet<>();
-
+        pontosTemp = new HashSet<>();
+        
         fxContainer.setScene(new Scene(root));
     }
 
@@ -226,9 +229,6 @@ public class PreenchimentoTela extends PlanoGrid {
                         (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
                             desenharPonto(corSelecionada, ponto);
                         });
-
-                        desenharPonto(Color.RED, pontoInicialReta);
-                        desenharPonto(Color.RED, p);
                         
                         Reta aux = new Reta(new Ponto(pontoInicialRetaAtual.getX(), pontoInicialRetaAtual.getY()), new Ponto(p.getX(), p.getY()));
                         poligonoAtual.getRetas().add(aux);
@@ -240,13 +240,15 @@ public class PreenchimentoTela extends PlanoGrid {
                         } else {
                             pontoInicialRetaAtual = p;
                         }
+                        
+                        pontosTemp.clear();
                     }
                 } else {
                     poligonoAtual = new Poligono();
                     poligonoEmConstrucao = true;
                     pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     pontoInicialRetaAtual = pontoInicialReta;
-                    desenharPonto(Color.RED, rect);
+                    desenharPonto(corSelecionada, rect);
                 }
             } else if (rect.getFill().equals(corPadrao)) {
                 rect.setFill(corSelecionada);
@@ -257,6 +259,34 @@ public class PreenchimentoTela extends PlanoGrid {
             }
         });
 
+        rect.setOnMouseEntered(event -> {
+            if (poligonoAtivado) {
+                if (poligonoEmConstrucao) {
+                    Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    if (!p.equals(pontoInicialRetaAtual)) {
+                        (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
+                            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
+                                pontosTemp.add(ponto);
+                                desenharPonto(corSelecionada, ponto);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+        
+        rect.setOnMouseExited(event -> {
+            if (poligonoAtivado) {
+                if (poligonoEmConstrucao) {
+                    pontosTemp.stream().forEach((ponto) -> {
+                        desenharPonto(corPadrao, ponto);
+                    });
+
+                    pontosTemp.clear();
+                }
+            }
+        });
+        
         rect.setOnMouseDragOver((MouseDragEvent) -> {
             if (!(preenchimentoAtivado || poligonoAtivado)) {
                 if (corSelecionada.equals(corPadrao) && !rect.getFill().equals(corPadrao)) {

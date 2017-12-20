@@ -14,7 +14,6 @@ import computacaograficaswing.util.Ponto;
 import computacaograficaswing.util.Reta;
 import java.util.HashSet;
 import java.util.Set;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -44,10 +43,9 @@ public class RecortePoligonosTela extends PlanoGrid {
     private Set<Poligono> poligonos;
 
     public void iniciarTela() {
-        ComputacaoGraficaSwing.mudarTitulo("Recorte");
+        ComputacaoGraficaSwing.mudarTitulo("Recorte de polígonos");
 
-        Button btn = new Button();
-        btn.setText("Voltar");
+        Button btn = new Button("Voltar");
         btn.setOnAction((ActionEvent) -> {
             ComputacaoGraficaSwing.createScene();
         });
@@ -71,9 +69,9 @@ public class RecortePoligonosTela extends PlanoGrid {
             setBotaoAreaDeRecorte();
         });
 
-        Button cortarCSClip = new Button("Cortar");
-        cortarCSClip.setOnAction(event -> {
-            //csClip();
+        Button cortar = new Button("Cortar");
+        cortar.setOnAction(event -> {
+            recortePoligonos();
         });
 
         Button limparTudoBtn = new Button("Limpar tela");
@@ -82,16 +80,16 @@ public class RecortePoligonosTela extends PlanoGrid {
         });
 
         ColorPicker colorPicker = new ColorPicker(corSelecionada);
-        colorPicker.setOnAction((ActionEvent event) -> {
+        colorPicker.setOnAction(event -> {
             corSelecionada = colorPicker.getValue();
         });
 
         ColorPicker colorPicker2 = new ColorPicker(corPreenchimento);
-        colorPicker2.setOnAction((ActionEvent event) -> {
+        colorPicker2.setOnAction(event -> {
             corPreenchimento = colorPicker2.getValue();
         });
 
-        hboxTop.getChildren().addAll(btn, escolherAreaRecorte, desenharPoligono, cortarCSClip, limparTudoBtn, colorPicker, colorPicker2);
+        hboxTop.getChildren().addAll(btn, escolherAreaRecorte, desenharPoligono, cortar, limparTudoBtn, colorPicker, colorPicker2);
 
         root.setTop(hboxTop);
         root.setCenter(inicializarPlano());
@@ -102,6 +100,10 @@ public class RecortePoligonosTela extends PlanoGrid {
         fxContainer.setScene(new Scene(root));
     }
 
+    private void recortePoligonos() {
+        
+    }
+    
     @Override
     protected Rectangle gerarRect(Color cor) {
         Rectangle rect = new Rectangle(TAMANHO_CELULA, TAMANHO_CELULA, cor);
@@ -125,13 +127,15 @@ public class RecortePoligonosTela extends PlanoGrid {
                         } else {
                             pontoInicialRetaAtual = p;
                         }
+
+                        pontosTemp.clear();
                     }
                 } else {
                     poligonoAtual = new Poligono();
                     poligonoEmConstrucao = true;
                     pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     pontoInicialRetaAtual = pontoInicialReta;
-                    desenharPonto(Color.RED, rect);
+                    desenharPonto(corSelecionada, rect);
                 }
             } else if (escolherAreaLigada) {
                 if (areaEmConstrucao) {
@@ -160,20 +164,17 @@ public class RecortePoligonosTela extends PlanoGrid {
                 if (poligonoEmConstrucao) {
                     Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     if (!p.equals(pontoInicialRetaAtual)) {
-                        if (!p.equals(pontoInicialReta)) {
-                            (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
-                                if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
-                                    pontosTemp.add(ponto);
-                                    desenharPonto(corSelecionada, ponto);
-                                }
-                            });
-                        }
+                        (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
+                            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
+                                pontosTemp.add(ponto);
+                                desenharPonto(corSelecionada, ponto);
+                            }
+                        });
                     }
                 }
             } else if (escolherAreaLigada) {
                 if (areaEmConstrucao) {
                     Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
-
                     if (!p.equals(pontoInicialReta)) {
                         AreaDeRecorte.gerarAreaDesenho(pontoInicialReta, p).forEach((ponto) -> {
                             if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
