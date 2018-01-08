@@ -13,7 +13,6 @@ import computacaograficaswing.util.Ponto;
 import computacaograficaswing.util.Reta;
 import java.util.HashSet;
 import java.util.Set;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -46,7 +45,7 @@ public class RecorteLinhasTela extends PlanoGrid {
 
         Button btn = new Button();
         btn.setText("Voltar");
-        btn.setOnAction((ActionEvent) -> {
+        btn.setOnAction(event -> {
             ComputacaoGraficaSwing.createScene();
         });
 
@@ -61,11 +60,11 @@ public class RecorteLinhasTela extends PlanoGrid {
 
         desenharReta = new Button("Desenhar reta");
         desenharReta.setTextFill(Color.RED);
-        desenharReta.setOnAction((ActionEvent) -> {
+        desenharReta.setOnAction(event -> {
             setBotaoRetaEmConstrucao();
         });
 
-        escolherAreaRecorte.setOnAction((ActionEvent) -> {
+        escolherAreaRecorte.setOnAction(event -> {
             setBotaoAreaDeRecorte();
         });
 
@@ -85,12 +84,12 @@ public class RecorteLinhasTela extends PlanoGrid {
         });
 
         ColorPicker colorPicker = new ColorPicker(corSelecionada);
-        colorPicker.setOnAction((ActionEvent event) -> {
+        colorPicker.setOnAction(event -> {
             corSelecionada = colorPicker.getValue();
         });
 
         ColorPicker colorPicker2 = new ColorPicker(corPreenchimento);
-        colorPicker2.setOnAction((ActionEvent event) -> {
+        colorPicker2.setOnAction(event -> {
             corPreenchimento = colorPicker2.getValue();
         });
 
