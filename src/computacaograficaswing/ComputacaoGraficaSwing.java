@@ -6,8 +6,11 @@ import computacaograficaswing.telas.PreenchimentoTela;
 import computacaograficaswing.areasdesenho.PlanoCartesiano;
 import computacaograficaswing.telas.RecorteLinhasTela;
 import computacaograficaswing.telas.RecortePoligonosTela;
+import computacaograficaswing.telas.Transformacoes2DTela;
+import computacaograficaswing.util.Matriz;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Insets;
@@ -96,12 +99,17 @@ public class ComputacaoGraficaSwing extends JApplet {
         recortePoligonosButton.setOnAction((ActionEvent) -> {
             new RecortePoligonosTela().iniciarTela();
         });
-
+        
+        Button transformacoes2DButton = new Button("Transformações 2D");
+        transformacoes2DButton.setOnAction((ActionEvent) -> {
+            new Transformacoes2DTela().iniciarTela();
+        });
+        
         HBox hboxTop = new HBox();
         hboxTop.setPadding(new Insets(15, 12, 15, 12));
         hboxTop.setSpacing(10);
         hboxTop.setAlignment(Pos.CENTER);
-        hboxTop.getChildren().addAll(bressenhamBotao, bressenhamCircularBotao, preenchimentoButton, recorteLinhasButton, recortePoligonosButton);
+        hboxTop.getChildren().addAll(bressenhamBotao, bressenhamCircularBotao, preenchimentoButton, recorteLinhasButton, recortePoligonosButton, transformacoes2DButton);
 
         BorderPane root = new BorderPane();
         root.setCenter(hboxTop);

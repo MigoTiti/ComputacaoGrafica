@@ -211,7 +211,6 @@ public class RecortePoligonosTela extends PlanoGrid {
     }
 
     @Override
-
     protected void limparTela() {
         super.limparTela();
         poligonos.clear();

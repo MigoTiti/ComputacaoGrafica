@@ -1,6 +1,7 @@
 package computacaograficaswing.util;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Poligono {
@@ -8,7 +9,7 @@ public class Poligono {
     private Set<Reta> retas;
 
     public Poligono(Reta reta) {
-        this.retas = new HashSet<>();
+        this.retas = new LinkedHashSet<>();
         this.retas.add(reta);
     }
 
