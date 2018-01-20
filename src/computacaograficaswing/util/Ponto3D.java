@@ -1,9 +1,16 @@
 package computacaograficaswing.util;
 
-public class Ponto3D extends Ponto {
+import java.io.Serializable;
+
+public class Ponto3D extends Ponto implements Serializable{
 
     private int z;
 
+    public Ponto3D(Ponto3D ponto) {
+        super(ponto.getX(), ponto.getY());
+        this.z = ponto.getZ();
+    }
+    
     public Ponto3D(int x, int y, int z) {
         super(x, y);
 

@@ -7,10 +7,9 @@ import computacaograficaswing.areasdesenho.PlanoCartesiano;
 import computacaograficaswing.telas.RecorteLinhasTela;
 import computacaograficaswing.telas.RecortePoligonosTela;
 import computacaograficaswing.telas.Transformacoes2DTela;
-import computacaograficaswing.util.Matriz;
+import computacaograficaswing.telas.Transformacoes3DTela;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.util.Arrays;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.geometry.Insets;
@@ -27,7 +26,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class ComputacaoGraficaSwing extends JApplet {
 
-    public static final int JFXPANEL_WIDTH_INT = 1030;
+    public static final int JFXPANEL_WIDTH_INT = 1200;
     public static JFXPanel fxContainer;
     private static JFrame frame;
     public static JApplet applet;
@@ -76,40 +75,45 @@ public class ComputacaoGraficaSwing extends JApplet {
         mudarTitulo("Paint v1");
 
         Button bressenhamBotao = new Button("Algoritmo de Bressenham");
-        bressenhamBotao.setOnAction((ActionEvent) -> {
+        bressenhamBotao.setOnAction(ActionEvent -> {
             new BressenhamRetaTela().iniciarTela();
         });
 
         Button bressenhamCircularBotao = new Button("Algoritmo de Bressenham (círculos)");
-        bressenhamCircularBotao.setOnAction((ActionEvent) -> {
+        bressenhamCircularBotao.setOnAction(ActionEvent -> {
             new BressenhamCirculoTela().iniciarTela();
         });
         
         Button preenchimentoButton = new Button("Preenchimento de formas");
-        preenchimentoButton.setOnAction((ActionEvent) -> {
+        preenchimentoButton.setOnAction(ActionEvent -> {
             new PreenchimentoTela().iniciarTela();
         });
         
         Button recorteLinhasButton = new Button("Recorte de linhas");
-        recorteLinhasButton.setOnAction((ActionEvent) -> {
+        recorteLinhasButton.setOnAction(ActionEvent -> {
             new RecorteLinhasTela().iniciarTela();
         });
         
         Button recortePoligonosButton = new Button("Recorte de polígonos");
-        recortePoligonosButton.setOnAction((ActionEvent) -> {
+        recortePoligonosButton.setOnAction(ActionEvent -> {
             new RecortePoligonosTela().iniciarTela();
         });
         
         Button transformacoes2DButton = new Button("Transformações 2D");
-        transformacoes2DButton.setOnAction((ActionEvent) -> {
+        transformacoes2DButton.setOnAction(ActionEvent -> {
             new Transformacoes2DTela().iniciarTela();
+        });
+        
+        Button transformacoes3DButton = new Button("Transformações 3D");
+        transformacoes3DButton.setOnAction(ActionEvent -> {
+            new Transformacoes3DTela().iniciarTela();
         });
         
         HBox hboxTop = new HBox();
         hboxTop.setPadding(new Insets(15, 12, 15, 12));
         hboxTop.setSpacing(10);
         hboxTop.setAlignment(Pos.CENTER);
-        hboxTop.getChildren().addAll(bressenhamBotao, bressenhamCircularBotao, preenchimentoButton, recorteLinhasButton, recortePoligonosButton, transformacoes2DButton);
+        hboxTop.getChildren().addAll(bressenhamBotao, bressenhamCircularBotao, preenchimentoButton, recorteLinhasButton, recortePoligonosButton, transformacoes2DButton, transformacoes3DButton);
 
         BorderPane root = new BorderPane();
         root.setCenter(hboxTop);

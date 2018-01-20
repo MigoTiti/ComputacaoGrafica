@@ -12,6 +12,11 @@ public class Reta {
         pontoFinal = ponto2;
     }
     
+    @Override
+    public String toString() {
+        return pontoInicial.toString() + " - " + pontoFinal.toString();
+    }
+    
     public Set<Ponto> getPontos() {
         return new BressenhamReta().aplicarBressenham(pontoInicial, pontoFinal);
     }
