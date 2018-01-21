@@ -9,6 +9,7 @@ import computacaograficaswing.areasdesenho.PlanoGrid;
 import static computacaograficaswing.telas.PreenchimentoTela.corPreenchimento;
 import computacaograficaswing.util.Matriz;
 import computacaograficaswing.util.Poligono;
+import computacaograficaswing.util.Poligono3D;
 import computacaograficaswing.util.Ponto3D;
 import computacaograficaswing.util.Reta;
 import java.util.HashSet;
@@ -37,7 +38,15 @@ import javafx.scene.shape.Rectangle;
 
 public class Transformacoes3DTela extends PlanoGrid {
 
-    private Set<Poligono> poligonos;
+    private Set<Poligono3D> poligonos;
+
+    private final Button cavalier = new Button("Cavalier");
+    private final Button cabinet = new Button("Cabinet");
+
+    public static final int PROJECAO_CABINET = 1;
+    public static final int PROJECAO_CAVALIER = 2;
+
+    private int tipoProjecao = PROJECAO_CABINET;
 
     public void iniciarTela() {
         ComputacaoGraficaSwing.mudarTitulo("Transformações 3D");
@@ -88,7 +97,41 @@ public class Transformacoes3DTela extends PlanoGrid {
             aplicarTransformacao(3);
         });
 
-        hboxTop.getChildren().addAll(btn, criarPoligono, limparTudoBtn, colorPicker, colorPicker2, translacao, rotacao, escala);
+        Button criarCubo = new Button("Criar cubo");
+        criarCubo.setOnAction(event -> {
+            criarCubo();
+        });
+
+        cavalier.setOnAction(event -> {
+            if (tipoProjecao != PROJECAO_CAVALIER) {
+                cabinet.setTextFill(Color.RED);
+                cavalier.setTextFill(Color.GREEN);
+
+                tipoProjecao = PROJECAO_CAVALIER;
+
+                poligonos.stream().forEach((poligono) -> {
+                    projetar(poligono);
+                });
+            }
+        });
+
+        cabinet.setOnAction(event -> {
+            if (tipoProjecao != PROJECAO_CABINET) {
+                cavalier.setTextFill(Color.RED);
+                cabinet.setTextFill(Color.GREEN);
+
+                tipoProjecao = PROJECAO_CABINET;
+
+                poligonos.stream().forEach((poligono) -> {
+                    projetar(poligono);
+                });
+            }
+        });
+
+        cavalier.setTextFill(Color.RED);
+        cabinet.setTextFill(Color.GREEN);
+
+        hboxTop.getChildren().addAll(btn, criarPoligono, criarCubo, limparTudoBtn, colorPicker, colorPicker2, translacao, rotacao, escala, cabinet, cavalier);
 
         root.setTop(hboxTop);
         root.setCenter(inicializarPlano());
@@ -98,8 +141,77 @@ public class Transformacoes3DTela extends PlanoGrid {
         fxContainer.setScene(new Scene(root));
     }
 
+    private void criarCubo() {
+        Dialog<Poligono3D> dialog = new Dialog<>();
+        dialog.setTitle("Criar cubo");
+        dialog.setResizable(true);
+
+        Label label11 = new Label("X inicial: ");
+        Label label12 = new Label("Y inicial: ");
+        Label label13 = new Label("Z inicial: ");
+        TextField xCampo1 = new TextField();
+        TextField yCampo1 = new TextField();
+        TextField zCampo1 = new TextField();
+
+        Label labelPonto2 = new Label("Medida dos lados: ");
+        TextField ladoCampo = new TextField();
+
+        GridPane grid = new GridPane();
+        grid.add(label11, 1, 1);
+        grid.add(xCampo1, 2, 1);
+        grid.add(label12, 1, 2);
+        grid.add(yCampo1, 2, 2);
+        grid.add(label13, 1, 3);
+        grid.add(zCampo1, 2, 3);
+
+        grid.add(labelPonto2, 1, 4);
+        grid.add(ladoCampo, 2, 4);
+        dialog.getDialogPane().setContent(grid);
+
+        ButtonType buttonTypeOk = new ButtonType("Criar", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+
+        dialog.setResultConverter((ButtonType b) -> {
+            if (b == buttonTypeOk) {
+                Poligono3D p = new Poligono3D();
+
+                int xInicial = Integer.parseInt(xCampo1.getText());
+                int yInicial = Integer.parseInt(yCampo1.getText());
+                int zInicial = Integer.parseInt(zCampo1.getText());
+
+                int lado = Integer.parseInt(ladoCampo.getText());
+
+                Ponto3D pontoInicial = new Ponto3D(xInicial, yInicial, zInicial);
+
+                p.getRetas().add(new Reta(pontoInicial, new Ponto3D(xInicial + lado, yInicial, zInicial)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial, yInicial, zInicial), new Ponto3D(xInicial, yInicial + lado, zInicial)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial, yInicial + lado, zInicial), new Ponto3D(xInicial + lado, yInicial + lado, zInicial)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial + lado, yInicial + lado, zInicial), new Ponto3D(xInicial + lado, yInicial, zInicial)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial + lado, yInicial, zInicial), new Ponto3D(xInicial + lado, yInicial, zInicial + lado)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial + lado, yInicial, zInicial + lado), new Ponto3D(xInicial + lado, yInicial + lado, zInicial + lado)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial + lado, yInicial + lado, zInicial + lado), new Ponto3D(xInicial + lado, yInicial + lado, zInicial)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial + lado, yInicial + lado, zInicial + lado), new Ponto3D(xInicial, yInicial + lado, zInicial + lado)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial, yInicial + lado, zInicial + lado), new Ponto3D(xInicial, yInicial, zInicial + lado)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial, yInicial, zInicial + lado), new Ponto3D(xInicial + lado, yInicial, zInicial + lado)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial, yInicial, zInicial + lado), new Ponto3D(xInicial, yInicial, zInicial)));
+                p.getRetas().add(new Reta(new Ponto3D(xInicial, yInicial + lado, zInicial + lado), new Ponto3D(xInicial, yInicial + lado, zInicial)));
+
+                return p;
+            }
+
+            return null;
+        });
+
+        Optional<Poligono3D> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
+            poligonos.add(result.get());
+            projetar(result.get());
+        }
+    }
+
     private void criarPoligono() {
-        Dialog<Poligono> dialog = new Dialog<>();
+        Dialog<Poligono3D> dialog = new Dialog<>();
         dialog.setTitle("Criar polígono");
         dialog.setResizable(false);
 
@@ -204,7 +316,7 @@ public class Transformacoes3DTela extends PlanoGrid {
 
         dialog.setResultConverter((ButtonType b) -> {
             if (b == buttonTypeOk) {
-                Poligono p = new Poligono();
+                Poligono3D p = new Poligono3D();
 
                 retas.stream().forEach((reta) -> {
                     p.getRetas().add(reta);
@@ -216,7 +328,7 @@ public class Transformacoes3DTela extends PlanoGrid {
             return null;
         });
 
-        Optional<Poligono> result = dialog.showAndWait();
+        Optional<Poligono3D> result = dialog.showAndWait();
 
         if (result.isPresent()) {
             poligonos.add(result.get());
@@ -224,125 +336,108 @@ public class Transformacoes3DTela extends PlanoGrid {
         }
     }
 
-    private void projetar(Poligono p) {
+    private void apagarPoligono(Poligono p) {
+        if (p != null) {
+            p.getRetas().stream().forEach((reta) -> {
+                reta.getPontos().stream().forEach((ponto) -> {
+                    desenharPonto(corPadrao, ponto);
+                });
+            });
+        }
+    }
+
+    private void projetar(Poligono3D p) {
+        Poligono projetado = new Poligono();
+
         p.getRetas().stream().forEach((reta) -> {
-            int[] pontoTransformado = Matriz.projecaoObliqua((Ponto3D) reta.getPontoInicial(), 0.5, 45);
+            int[] pontoTransformado = Matriz.projecaoObliqua((Ponto3D) reta.getPontoInicial(), tipoProjecao == PROJECAO_CABINET ? 0.5 : 1, 45);
+            int[] pontoTransformadoFinal = Matriz.projecaoObliqua((Ponto3D) reta.getPontoFinal(), tipoProjecao == PROJECAO_CABINET ? 0.5 : 1, 45);
 
-            reta.getPontoInicial().setX(pontoTransformado[0]);
-            reta.getPontoInicial().setY(pontoTransformado[1]);
-            ((Ponto3D) reta.getPontoInicial()).setZ(pontoTransformado[2]);
+            Ponto3D novoPontoInicial = new Ponto3D(pontoTransformado[0], pontoTransformado[1], pontoTransformado[2]);
+            Ponto3D novoPontoFinal = new Ponto3D(pontoTransformadoFinal[0], pontoTransformadoFinal[1], pontoTransformadoFinal[2]);
 
-            int[] pontoTransformadoFinal = Matriz.projecaoObliqua((Ponto3D) reta.getPontoFinal(), 0.5, 45);
+            projetado.getRetas().add(new Reta(novoPontoInicial, novoPontoFinal));
+        });
 
-            reta.getPontoFinal().setX(pontoTransformadoFinal[0]);
-            reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
-            ((Ponto3D) reta.getPontoFinal()).setZ(pontoTransformadoFinal[2]);
+        apagarPoligono(p.getPoligonoProjetado());
+        p.setPoligonoProjetado(projetado);
 
+        projetado.getRetas().stream().forEach((reta) -> {
             reta.getPontos().stream().forEach((ponto) -> {
                 desenharPonto(corSelecionada, ponto);
             });
         });
     }
 
-    private void aplicarTranslacao(int taxaX, int taxaY) {
+    private void aplicarTranslacao(int taxaX, int taxaY, int taxaZ) {
         poligonos.stream().forEach((poligono) -> {
             poligono.getRetas().stream().forEach((reta) -> {
-                reta.getPontos().stream().forEach((ponto) -> {
-                    desenharPonto(corPadrao, ponto);
-                });
+                int[] pontoTransformado = Matriz.translacao3D((Ponto3D) reta.getPontoInicial(), taxaX, taxaY, taxaZ);
+                int[] pontoTransformadoFinal = Matriz.translacao3D((Ponto3D) reta.getPontoFinal(), taxaX, taxaY, taxaZ);
+
+                reta.getPontoInicial().setX(pontoTransformado[0]);
+                reta.getPontoInicial().setY(pontoTransformado[1]);
+                ((Ponto3D) reta.getPontoInicial()).setZ(pontoTransformado[2]);
+
+                reta.getPontoFinal().setX(pontoTransformadoFinal[0]);
+                reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
+                ((Ponto3D) reta.getPontoFinal()).setZ(pontoTransformadoFinal[2]);
             });
-        });
 
-        poligonos.stream().forEach((poligono) -> {
-            poligono.getRetas().stream().forEach((reta) -> {
-                int[] pontoTransformado = Matriz.translacao2D(reta.getPontoInicial(), taxaX, taxaY);
-
-                int xNovo = (int) Math.round(pontoTransformado[0]);
-                int yNovo = (int) Math.round(pontoTransformado[1]);
-
-                reta.getPontoInicial().setX(xNovo);
-                reta.getPontoInicial().setY(yNovo);
-
-                int[] pontoTransformadoFinal = Matriz.translacao2D(reta.getPontoFinal(), taxaX, taxaY);
-
-                int xNovoFinal = (int) Math.round(pontoTransformadoFinal[0]);
-                int yNovoFinal = (int) Math.round(pontoTransformadoFinal[1]);
-
-                reta.getPontoFinal().setX(xNovoFinal);
-                reta.getPontoFinal().setY(yNovoFinal);
-
-                reta.getPontos().stream().forEach((ponto) -> {
-                    desenharPonto(corSelecionada, ponto);
-                });
-            });
+            projetar(poligono);
         });
     }
 
-    private void aplicarRotacao(double angulo) {
+    private void aplicarRotacao(double angulo, int eixo) {
         poligonos.stream().forEach((poligono) -> {
             poligono.getRetas().stream().forEach((reta) -> {
-                reta.getPontos().stream().forEach((ponto) -> {
-                    desenharPonto(corPadrao, ponto);
-                });
+                int[] pontoTransformado = null;
+                int[] pontoTransformadoFinal = null;
+
+                switch (eixo) {
+                    case 1:
+                        pontoTransformado = Matriz.rotacao3DX((Ponto3D) reta.getPontoInicial(), angulo);
+                        pontoTransformadoFinal = Matriz.rotacao3DX((Ponto3D) reta.getPontoFinal(), angulo);
+                        break;
+                    case 2:
+                        pontoTransformado = Matriz.rotacao3DY((Ponto3D) reta.getPontoInicial(), angulo);
+                        pontoTransformadoFinal = Matriz.rotacao3DY((Ponto3D) reta.getPontoFinal(), angulo);
+                        break;
+                    case 3:
+                        pontoTransformado = Matriz.rotacao3DZ((Ponto3D) reta.getPontoInicial(), angulo);
+                        pontoTransformadoFinal = Matriz.rotacao3DZ((Ponto3D) reta.getPontoFinal(), angulo);
+                        break;
+                }
+
+                reta.getPontoInicial().setX(pontoTransformado[0]);
+                reta.getPontoInicial().setY(pontoTransformado[1]);
+                ((Ponto3D) reta.getPontoInicial()).setZ(pontoTransformado[2]);
+
+                reta.getPontoFinal().setX(pontoTransformadoFinal[0]);
+                reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
+                ((Ponto3D) reta.getPontoFinal()).setZ(pontoTransformadoFinal[2]);
             });
-        });
 
-        poligonos.stream().forEach((poligono) -> {
-            poligono.getRetas().stream().forEach((reta) -> {
-                int[] pontoTransformado = Matriz.rotacao2D(reta.getPontoInicial(), angulo);
-
-                int xNovo = (int) Math.round(pontoTransformado[0]);
-                int yNovo = (int) Math.round(pontoTransformado[1]);
-
-                reta.getPontoInicial().setX(xNovo);
-                reta.getPontoInicial().setY(yNovo);
-
-                int[] pontoTransformadoFinal = Matriz.rotacao2D(reta.getPontoFinal(), angulo);
-
-                int xNovoFinal = (int) Math.round(pontoTransformadoFinal[0]);
-                int yNovoFinal = (int) Math.round(pontoTransformadoFinal[1]);
-
-                reta.getPontoFinal().setX(xNovoFinal);
-                reta.getPontoFinal().setY(yNovoFinal);
-
-                reta.getPontos().stream().forEach((ponto) -> {
-                    desenharPonto(corSelecionada, ponto);
-                });
-            });
+            projetar(poligono);
         });
     }
 
-    private void aplicarEscala(double taxaX, double taxaY) {
+    private void aplicarEscala(double taxaX, double taxaY, double taxaZ) {
         poligonos.stream().forEach((poligono) -> {
             poligono.getRetas().stream().forEach((reta) -> {
-                reta.getPontos().stream().forEach((ponto) -> {
-                    desenharPonto(corPadrao, ponto);
-                });
+                int[] pontoTransformado = Matriz.escala3D((Ponto3D) reta.getPontoInicial(), taxaX, taxaY, taxaZ);
+                int[] pontoTransformadoFinal = Matriz.escala3D((Ponto3D) reta.getPontoFinal(), taxaX, taxaY, taxaZ);
+
+                reta.getPontoInicial().setX(pontoTransformado[0]);
+                reta.getPontoInicial().setY(pontoTransformado[1]);
+                ((Ponto3D) reta.getPontoInicial()).setZ(pontoTransformado[2]);
+
+                reta.getPontoFinal().setX(pontoTransformadoFinal[0]);
+                reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
+                ((Ponto3D) reta.getPontoFinal()).setZ(pontoTransformadoFinal[2]);
             });
-        });
 
-        poligonos.stream().forEach((poligono) -> {
-            poligono.getRetas().stream().forEach((reta) -> {
-                int[] pontoTransformado = Matriz.escala2D(reta.getPontoInicial(), taxaX, taxaY);
-
-                int xNovo = (int) Math.round(pontoTransformado[0]);
-                int yNovo = (int) Math.round(pontoTransformado[1]);
-
-                reta.getPontoInicial().setX(xNovo);
-                reta.getPontoInicial().setY(yNovo);
-
-                int[] pontoTransformadoFinal = Matriz.escala2D(reta.getPontoFinal(), taxaX, taxaY);
-
-                int xNovoFinal = (int) Math.round(pontoTransformadoFinal[0]);
-                int yNovoFinal = (int) Math.round(pontoTransformadoFinal[1]);
-
-                reta.getPontoFinal().setX(xNovoFinal);
-                reta.getPontoFinal().setY(yNovoFinal);
-
-                reta.getPontos().stream().forEach((ponto) -> {
-                    desenharPonto(corSelecionada, ponto);
-                });
-            });
+            projetar(poligono);
         });
     }
 
@@ -351,10 +446,12 @@ public class Transformacoes3DTela extends PlanoGrid {
 
             double param1;
             double param2;
+            double param3;
 
-            public Transformacao(double param1, double param2) {
+            public Transformacao(double param1, double param2, double param3) {
                 this.param1 = param1;
                 this.param2 = param2;
+                this.param3 = param3;
             }
         }
 
@@ -366,14 +463,18 @@ public class Transformacoes3DTela extends PlanoGrid {
                 dialog.setTitle("Translação");
                 Label label1 = new Label("Translação em x: ");
                 Label label2 = new Label("Translação em y: ");
+                Label label3 = new Label("Translação em z: ");
                 TextField text1 = new TextField();
                 TextField text2 = new TextField();
+                TextField text3 = new TextField();
 
                 GridPane grid = new GridPane();
                 grid.add(label1, 1, 1);
                 grid.add(text1, 2, 1);
                 grid.add(label2, 1, 2);
                 grid.add(text2, 2, 2);
+                grid.add(label3, 1, 3);
+                grid.add(text3, 2, 3);
                 dialog.getDialogPane().setContent(grid);
 
                 ButtonType buttonTypeOk = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
@@ -384,7 +485,7 @@ public class Transformacoes3DTela extends PlanoGrid {
                             return null;
                         }
 
-                        return new Transformacao(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()));
+                        return new Transformacao(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()), Double.parseDouble(text3.getText()));
                     }
 
                     return null;
@@ -393,7 +494,7 @@ public class Transformacoes3DTela extends PlanoGrid {
                 Optional<Transformacao> result = dialog.showAndWait();
 
                 if (result.isPresent()) {
-                    aplicarTranslacao((int) result.get().param1, (int) result.get().param2);
+                    aplicarTranslacao((int) result.get().param1, (int) result.get().param2, (int) result.get().param3);
                 }
 
                 break;
@@ -402,10 +503,14 @@ public class Transformacoes3DTela extends PlanoGrid {
                 dialog.setTitle("Rotação");
                 Label label1 = new Label("Ângulo (graus): ");
                 TextField text1 = new TextField();
+                Label label2 = new Label("Eixo: ");
+                TextField text2 = new TextField();
 
                 GridPane grid = new GridPane();
                 grid.add(label1, 1, 1);
                 grid.add(text1, 2, 1);
+                grid.add(label2, 1, 2);
+                grid.add(text2, 2, 2);
                 dialog.getDialogPane().setContent(grid);
 
                 ButtonType buttonTypeOk = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
@@ -416,7 +521,30 @@ public class Transformacoes3DTela extends PlanoGrid {
                             return null;
                         }
 
-                        return new Transformacao(Double.parseDouble(text1.getText()), 0);
+                        int eixo = 1;
+
+                        switch (text2.getText()) {
+                            case "x":
+                                eixo = 1;
+                                break;
+                            case "X":
+                                eixo = 1;
+                                break;
+                            case "y":
+                                eixo = 2;
+                                break;
+                            case "Y":
+                                eixo = 2;
+                                break;
+                            case "z":
+                                eixo = 3;
+                                break;
+                            case "Z":
+                                eixo = 3;
+                                break;
+                        }
+
+                        return new Transformacao(Double.parseDouble(text1.getText()), eixo, 0);
                     }
 
                     return null;
@@ -425,7 +553,7 @@ public class Transformacoes3DTela extends PlanoGrid {
                 Optional<Transformacao> result = dialog.showAndWait();
 
                 if (result.isPresent()) {
-                    aplicarRotacao(result.get().param1);
+                    aplicarRotacao(result.get().param1, (int)result.get().param2);
                 }
 
                 break;
@@ -434,14 +562,18 @@ public class Transformacoes3DTela extends PlanoGrid {
                 dialog.setTitle("Escala");
                 Label label1 = new Label("Escala em x: ");
                 Label label2 = new Label("Escala em y: ");
+                Label label3 = new Label("Escala em z: ");
                 TextField text1 = new TextField();
                 TextField text2 = new TextField();
+                TextField text3 = new TextField();
 
                 GridPane grid = new GridPane();
                 grid.add(label1, 1, 1);
                 grid.add(text1, 2, 1);
                 grid.add(label2, 1, 2);
                 grid.add(text2, 2, 2);
+                grid.add(label3, 1, 3);
+                grid.add(text3, 2, 3);
                 dialog.getDialogPane().setContent(grid);
 
                 ButtonType buttonTypeOk = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
@@ -452,7 +584,7 @@ public class Transformacoes3DTela extends PlanoGrid {
                             return null;
                         }
 
-                        return new Transformacao(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()));
+                        return new Transformacao(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()), Double.parseDouble(text3.getText()));
                     }
 
                     return null;
@@ -461,7 +593,7 @@ public class Transformacoes3DTela extends PlanoGrid {
                 Optional<Transformacao> result = dialog.showAndWait();
 
                 if (result.isPresent()) {
-                    aplicarEscala(result.get().param1, result.get().param2);
+                    aplicarEscala(result.get().param1, result.get().param2, result.get().param3);
                 }
 
                 break;
