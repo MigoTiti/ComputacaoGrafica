@@ -2,6 +2,11 @@ package computacaograficaswing.util;
 
 public class Matriz {
     
+    public static int[] projecaoPerspectiva3PontosFuga(Ponto3D p) {
+        int[] resultado = new int[] {};
+        return resultado;
+    }
+    
     public static int[] projecaoObliqua(Ponto3D p, double fatorProfundidade, double angulo) {
         double[][] matrizProjecao = {{1, 0, fatorProfundidade * Math.cos(Math.toRadians(angulo)), 0}, 
                                      {0, 1, fatorProfundidade * Math.sin(Math.toRadians(angulo)), 0},

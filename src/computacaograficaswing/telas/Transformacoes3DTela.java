@@ -15,6 +15,8 @@ import computacaograficaswing.util.Reta;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -33,6 +35,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -48,6 +51,8 @@ public class Transformacoes3DTela extends PlanoGrid {
 
     private int tipoProjecao = PROJECAO_CABINET;
 
+    private boolean stop = false;
+
     public void iniciarTela() {
         ComputacaoGraficaSwing.mudarTitulo("Transformações 3D");
 
@@ -57,6 +62,58 @@ public class Transformacoes3DTela extends PlanoGrid {
         });
 
         BorderPane root = new BorderPane();
+
+        VBox vBoxDireita = new VBox();
+        vBoxDireita.setSpacing(10);
+        vBoxDireita.setPadding(new Insets(15));
+
+        TextField campoAngulo = new TextField();
+        Button rotacaoX = new Button("Rotação X");
+        rotacaoX.setOnAction(event -> {
+            stop = !stop;
+            new Thread(() -> {
+                while (stop) {
+                    try {
+                        aplicarRotacao(Double.parseDouble(campoAngulo.getText()), 1);
+                        Thread.sleep(10);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Transformacoes3DTela.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }).start();
+        });
+
+        Button rotacaoY = new Button("Rotação Y");
+        rotacaoY.setOnAction(event -> {
+            stop = !stop;
+            new Thread(() -> {
+                while (stop) {
+                    try {
+                        aplicarRotacao(Double.parseDouble(campoAngulo.getText()), 2);
+                        Thread.sleep(10);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Transformacoes3DTela.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }).start();
+        });
+
+        Button rotacaoZ = new Button("Rotação Z");
+        rotacaoZ.setOnAction(event -> {
+            stop = !stop;
+            new Thread(() -> {
+                while (stop) {
+                    try {
+                        aplicarRotacao(Double.parseDouble(campoAngulo.getText()), 3);
+                        Thread.sleep(10);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Transformacoes3DTela.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }).start();
+        });
+
+        vBoxDireita.getChildren().addAll(campoAngulo, rotacaoX, rotacaoY, rotacaoZ);
 
         HBox hboxTop = new HBox();
         hboxTop.setPadding(new Insets(15, 12, 15, 12));
@@ -135,10 +192,29 @@ public class Transformacoes3DTela extends PlanoGrid {
 
         root.setTop(hboxTop);
         root.setCenter(inicializarPlano());
+        root.setRight(vBoxDireita);
 
         poligonos = new HashSet<>();
 
         fxContainer.setScene(new Scene(root));
+    }
+
+    private Ponto3D getCenter(Poligono p) {
+        double x = 0;
+        double y = 0;
+        double z = 0;
+
+        for (Reta reta : p.getRetas()) {
+            x += (reta.getPontoInicial().getX() + reta.getPontoFinal().getX());
+            y += (reta.getPontoInicial().getY() + reta.getPontoFinal().getY());
+            z += (((Ponto3D) reta.getPontoInicial()).getZ() + ((Ponto3D) reta.getPontoFinal()).getZ());
+        }
+
+        x /= p.getRetas().size() * 2;
+        y /= p.getRetas().size() * 2;
+        z /= p.getRetas().size() * 2;
+
+        return new Ponto3D(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)), Math.toIntExact(Math.round(z)));
     }
 
     private void criarCubo() {
@@ -384,12 +460,15 @@ public class Transformacoes3DTela extends PlanoGrid {
                 ((Ponto3D) reta.getPontoFinal()).setZ(pontoTransformadoFinal[2]);
             });
 
-            projetar(poligono);
+            //projetar(poligono);
         });
     }
 
     private void aplicarRotacao(double angulo, int eixo) {
         poligonos.stream().forEach((poligono) -> {
+            Ponto3D centro = getCenter(poligono);
+            aplicarTranslacao(-centro.getX(), -centro.getY(), -centro.getZ());
+
             poligono.getRetas().stream().forEach((reta) -> {
                 int[] pontoTransformado = null;
                 int[] pontoTransformadoFinal = null;
@@ -417,6 +496,8 @@ public class Transformacoes3DTela extends PlanoGrid {
                 reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
                 ((Ponto3D) reta.getPontoFinal()).setZ(pontoTransformadoFinal[2]);
             });
+
+            aplicarTranslacao(centro.getX(), centro.getY(), centro.getZ());
 
             projetar(poligono);
         });
@@ -495,6 +576,9 @@ public class Transformacoes3DTela extends PlanoGrid {
 
                 if (result.isPresent()) {
                     aplicarTranslacao((int) result.get().param1, (int) result.get().param2, (int) result.get().param3);
+                    poligonos.stream().forEach(poligono -> {
+                        projetar(poligono);
+                    });
                 }
 
                 break;
@@ -553,7 +637,7 @@ public class Transformacoes3DTela extends PlanoGrid {
                 Optional<Transformacao> result = dialog.showAndWait();
 
                 if (result.isPresent()) {
-                    aplicarRotacao(result.get().param1, (int)result.get().param2);
+                    aplicarRotacao(result.get().param1, (int) result.get().param2);
                 }
 
                 break;
