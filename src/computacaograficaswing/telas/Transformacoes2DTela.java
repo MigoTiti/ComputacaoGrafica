@@ -15,6 +15,8 @@ import computacaograficaswing.util.transformacoes.RetaTransformacao;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -27,6 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -42,6 +45,8 @@ public class Transformacoes2DTela extends PlanoGrid {
     private Ponto2D pontoInicialRetaAtual;
     private Poligono2D poligonoAtual;
     private Set<Poligono2D> poligonos;
+    
+    private boolean stop = false;
 
     public void iniciarTela() {
         ComputacaoGraficaSwing.mudarTitulo("Transformações 2D");
@@ -68,6 +73,28 @@ public class Transformacoes2DTela extends PlanoGrid {
             limparTela();
         });
 
+        VBox vBoxDireita = new VBox();
+        vBoxDireita.setSpacing(10);
+        vBoxDireita.setPadding(new Insets(15));
+
+        TextField campoAngulo = new TextField();
+        Button rotacaoX = new Button("Rotação");
+        rotacaoX.setOnAction(event -> {
+            stop = !stop;
+            new Thread(() -> {
+                while (stop) {
+                    try {
+                        aplicarRotacao(Double.parseDouble(campoAngulo.getText()));
+                        Thread.sleep(10);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Transformacoes3DTela.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }).start();
+        });
+        
+        vBoxDireita.getChildren().addAll(campoAngulo, rotacaoX);
+        
         ColorPicker colorPicker = new ColorPicker(corSelecionada);
         colorPicker.setOnAction(event -> {
             corSelecionada = colorPicker.getValue();
@@ -97,6 +124,7 @@ public class Transformacoes2DTela extends PlanoGrid {
 
         root.setTop(hboxTop);
         root.setCenter(inicializarPlano());
+        root.setRight(vBoxDireita);
 
         poligonos = new HashSet<>();
         pontosTemp = new HashSet<>();
@@ -107,29 +135,32 @@ public class Transformacoes2DTela extends PlanoGrid {
     private void aplicarTranslacao(int taxaX, int taxaY) {
         poligonos.stream().forEach((poligono) -> {
             poligono.getRetas().stream().forEach((reta) -> {
-                reta.getPontos().stream().forEach((ponto) -> {
-                    desenharPonto(corPadrao, ponto);
-                });
-            });
-        });
-        
-        poligonos.stream().forEach((poligono) -> {
-            poligono.getRetas().stream().forEach((reta) -> {      
                 double[] pontoTransformado = Matriz.translacao2D(reta.getPontoInicial(), taxaX, taxaY);
-                
+
                 reta.getPontoInicial().setX(pontoTransformado[0]);
                 reta.getPontoInicial().setY(pontoTransformado[1]);
-                
+
                 double[] pontoTransformadoFinal = Matriz.translacao2D(reta.getPontoFinal(), taxaX, taxaY);
-                
+
                 reta.getPontoFinal().setX(pontoTransformadoFinal[0]);
                 reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
-                
-                reta.getPontos().stream().forEach((ponto) -> {
-                    desenharPonto(corSelecionada, ponto);
-                });
             });
         });
+    }
+
+    private Ponto2D getCenter(Poligono2D p) {
+        double x = 0;
+        double y = 0;
+
+        for (RetaTransformacao reta : p.getRetas()) {
+            x += (reta.getPontoInicial().getX() + reta.getPontoFinal().getX());
+            y += (reta.getPontoInicial().getY() + reta.getPontoFinal().getY());
+        }
+
+        x /= p.getRetas().size() * 2;
+        y /= p.getRetas().size() * 2;
+
+        return new Ponto2D(x, y);
     }
     
     private void aplicarRotacao(double angulo) {
@@ -140,26 +171,33 @@ public class Transformacoes2DTela extends PlanoGrid {
                 });
             });
         });
-        
+
         poligonos.stream().forEach((poligono) -> {
-            poligono.getRetas().stream().forEach((reta) -> {     
+            Ponto2D centro = getCenter(poligono);
+            aplicarTranslacao(-centro.getXArredondado(), -centro.getYArredondado());
+            
+            poligono.getRetas().stream().forEach((reta) -> {
                 double[] pontoTransformado = Matriz.rotacao2D(reta.getPontoInicial(), angulo);
-                
+
                 reta.getPontoInicial().setX(pontoTransformado[0]);
                 reta.getPontoInicial().setY(pontoTransformado[1]);
-                
+
                 double[] pontoTransformadoFinal = Matriz.rotacao2D(reta.getPontoFinal(), angulo);
-                
+
                 reta.getPontoFinal().setX(pontoTransformadoFinal[0]);
                 reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
-                
+            });
+            
+            aplicarTranslacao(centro.getXArredondado(), centro.getYArredondado());
+            
+            poligono.getRetas().stream().forEach((reta) -> {
                 reta.getPontos().stream().forEach((ponto) -> {
                     desenharPonto(corSelecionada, ponto);
                 });
             });
         });
     }
-    
+
     private void aplicarEscala(double taxaX, double taxaY) {
         poligonos.stream().forEach((poligono) -> {
             poligono.getRetas().stream().forEach((reta) -> {
@@ -168,26 +206,26 @@ public class Transformacoes2DTela extends PlanoGrid {
                 });
             });
         });
-        
+
         poligonos.stream().forEach((poligono) -> {
-            poligono.getRetas().stream().forEach((reta) -> {              
+            poligono.getRetas().stream().forEach((reta) -> {
                 double[] pontoTransformado = Matriz.escala2D(reta.getPontoInicial(), taxaX, taxaY);
-                
+
                 reta.getPontoInicial().setX(pontoTransformado[0]);
                 reta.getPontoInicial().setY(pontoTransformado[1]);
-                
+
                 double[] pontoTransformadoFinal = Matriz.escala2D(reta.getPontoFinal(), taxaX, taxaY);
-                
+
                 reta.getPontoFinal().setX(pontoTransformadoFinal[0]);
                 reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
-                
+
                 reta.getPontos().stream().forEach((ponto) -> {
                     desenharPonto(corSelecionada, ponto);
                 });
             });
         });
     }
-    
+
     private void aplicarTransformacao(int tipo) {
         class Transformacao {
 
@@ -202,7 +240,7 @@ public class Transformacoes2DTela extends PlanoGrid {
 
         Dialog<Transformacao> dialog = new Dialog<>();
         dialog.setResizable(false);
-        
+
         switch (tipo) {
             case 1: {
                 dialog.setTitle("Translação");
@@ -222,9 +260,10 @@ public class Transformacoes2DTela extends PlanoGrid {
                 dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
                 dialog.setResultConverter((ButtonType b) -> {
                     if (b == buttonTypeOk) {
-                        if (text1.getText() == null || text2.getText() == null || text1.getText().equals("") || text2.getText().equals(""))
+                        if (text1.getText() == null || text2.getText() == null || text1.getText().equals("") || text2.getText().equals("")) {
                             return null;
-                        
+                        }
+
                         return new Transformacao(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()));
                     }
 
@@ -234,9 +273,25 @@ public class Transformacoes2DTela extends PlanoGrid {
                 Optional<Transformacao> result = dialog.showAndWait();
 
                 if (result.isPresent()) {
-                    aplicarTranslacao((int)result.get().param1, (int)result.get().param2);
+                    poligonos.stream().forEach((poligono) -> {
+                        poligono.getRetas().stream().forEach((reta) -> {
+                            reta.getPontos().stream().forEach((ponto) -> {
+                                desenharPonto(corPadrao, ponto);
+                            });
+                        });
+                    });
+
+                    aplicarTranslacao((int) result.get().param1, (int) result.get().param2);
+
+                    poligonos.stream().forEach(poligono -> {
+                        poligono.getRetas().stream().forEach(reta -> {
+                            reta.getPontos().stream().forEach((ponto) -> {
+                                desenharPonto(corSelecionada, ponto);
+                            });
+                        });
+                    });
                 }
-                
+
                 break;
             }
             case 2: {
@@ -253,9 +308,10 @@ public class Transformacoes2DTela extends PlanoGrid {
                 dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
                 dialog.setResultConverter((ButtonType b) -> {
                     if (b == buttonTypeOk) {
-                        if (text1.getText() == null || text1.getText().equals(""))
+                        if (text1.getText() == null || text1.getText().equals("")) {
                             return null;
-                        
+                        }
+
                         return new Transformacao(Double.parseDouble(text1.getText()), 0);
                     }
 
@@ -267,7 +323,7 @@ public class Transformacoes2DTela extends PlanoGrid {
                 if (result.isPresent()) {
                     aplicarRotacao(result.get().param1);
                 }
-                
+
                 break;
             }
             case 3: {
@@ -288,9 +344,10 @@ public class Transformacoes2DTela extends PlanoGrid {
                 dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
                 dialog.setResultConverter((ButtonType b) -> {
                     if (b == buttonTypeOk) {
-                        if (text1.getText() == null || text2.getText() == null || text1.getText().equals("") || text2.getText().equals(""))
+                        if (text1.getText() == null || text2.getText() == null || text1.getText().equals("") || text2.getText().equals("")) {
                             return null;
-                        
+                        }
+
                         return new Transformacao(Double.parseDouble(text1.getText()), Double.parseDouble(text2.getText()));
                     }
 

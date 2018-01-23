@@ -214,7 +214,7 @@ public class Transformacoes3DTela extends PlanoGrid {
         y /= p.getRetas().size() * 2;
         z /= p.getRetas().size() * 2;
 
-        return new Ponto3D(Math.toIntExact(Math.round(x)), Math.toIntExact(Math.round(y)), Math.toIntExact(Math.round(z)));
+        return new Ponto3D(x, y, z);
     }
 
     private void criarCubo() {
