@@ -1,6 +1,6 @@
 package computacaograficaswing.framebuffer;
 
-import computacaograficaswing.util.transformacoes.Ponto2D;
+import computacaograficaswing.util.Ponto2D;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.paint.Color;

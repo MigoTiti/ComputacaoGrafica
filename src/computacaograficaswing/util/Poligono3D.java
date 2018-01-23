@@ -1,4 +1,4 @@
-package computacaograficaswing.util.transformacoes;
+package computacaograficaswing.util;
 
 public class Poligono3D extends Poligono2D {
     

@@ -1,7 +1,7 @@
 package computacaograficaswing.util.transformacoes;
 
-import computacaograficaswing.util.transformacoes.Ponto2D;
-import computacaograficaswing.util.transformacoes.Ponto3D;
+import computacaograficaswing.util.Ponto2D;
+import computacaograficaswing.util.Ponto3D;
 
 public class Matriz {
     

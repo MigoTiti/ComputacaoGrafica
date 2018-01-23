@@ -1,4 +1,4 @@
-package computacaograficaswing.util.transformacoes;
+package computacaograficaswing.util;
 
 import java.util.Set;
 

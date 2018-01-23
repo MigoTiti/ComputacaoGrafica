@@ -1,6 +1,5 @@
 package computacaograficaswing.util;
 
-import computacaograficaswing.util.transformacoes.Ponto2D;
 import java.util.HashSet;
 import java.util.Set;
 

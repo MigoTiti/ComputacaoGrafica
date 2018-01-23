@@ -17,7 +17,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import computacaograficaswing.util.BressenhamCirculo;
-import computacaograficaswing.util.transformacoes.Ponto2D;
+import computacaograficaswing.util.Ponto2D;
 
 public class BressenhamCirculoTela extends PlanoCartesiano {
 

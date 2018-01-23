@@ -1,4 +1,4 @@
-package computacaograficaswing.util.transformacoes;
+package computacaograficaswing.util;
 
 import java.util.LinkedHashSet;
 import java.util.Set;

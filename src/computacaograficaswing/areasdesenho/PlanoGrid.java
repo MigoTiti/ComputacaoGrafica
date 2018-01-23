@@ -4,7 +4,7 @@ import static computacaograficaswing.areasdesenho.AreaDesenho.ORDEM;
 import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_CELULA;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import computacaograficaswing.framebuffer.FrameBufferGrid;
-import computacaograficaswing.util.transformacoes.Ponto2D;
+import computacaograficaswing.util.Ponto2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;

@@ -4,7 +4,7 @@ import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_RETANGULO;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.framebuffer.FrameBufferPlanoCartesiano;
-import computacaograficaswing.util.transformacoes.Ponto2D;
+import computacaograficaswing.util.Ponto2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;

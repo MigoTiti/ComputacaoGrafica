@@ -1,4 +1,4 @@
-package computacaograficaswing.util.transformacoes;
+package computacaograficaswing.util;
 
 public class Ponto2D {
 
