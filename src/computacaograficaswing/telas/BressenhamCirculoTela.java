@@ -5,7 +5,6 @@ import javafx.scene.control.Button;
 import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
 import computacaograficaswing.areasdesenho.PlanoCartesiano;
-import computacaograficaswing.util.Ponto;
 import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -18,6 +17,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import computacaograficaswing.util.BressenhamCirculo;
+import computacaograficaswing.util.transformacoes.Ponto2D;
 
 public class BressenhamCirculoTela extends PlanoCartesiano {
 
@@ -67,7 +67,7 @@ public class BressenhamCirculoTela extends PlanoCartesiano {
         Button calcularButton = new Button();
         calcularButton.setText("Desenhar círculo");
         calcularButton.setOnAction((ActionEvent) -> {
-            Set<Ponto> pontos = BressenhamCirculo.aplicarBressenhamCirculo(new Ponto(Integer.parseInt(xCampo.getText()), Integer.parseInt(yCampo.getText())), Integer.parseInt(raioCampo.getText()));
+            Set<Ponto2D> pontos = BressenhamCirculo.aplicarBressenhamCirculo(new Ponto2D(Integer.parseInt(xCampo.getText()), Integer.parseInt(yCampo.getText())), Integer.parseInt(raioCampo.getText()));
 
             pontos.stream().forEach((ponto) -> {
                 desenharPonto(ponto);

@@ -1,4 +1,4 @@
-package computacaograficaswing.util;
+package computacaograficaswing.util.transformacoes;
 
 import computacaograficaswing.util.transformacoes.Ponto2D;
 import computacaograficaswing.util.transformacoes.Ponto3D;

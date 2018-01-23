@@ -7,11 +7,11 @@ import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.areasdesenho.PlanoGrid;
 import static computacaograficaswing.telas.PreenchimentoTela.corPreenchimento;
-import computacaograficaswing.util.Matriz;
-import computacaograficaswing.util.transformacoes.BressenhamTransformacao;
+import computacaograficaswing.util.transformacoes.Matriz;
+import computacaograficaswing.util.transformacoes.BressenhamReta;
 import computacaograficaswing.util.transformacoes.Poligono2D;
 import computacaograficaswing.util.transformacoes.Ponto2D;
-import computacaograficaswing.util.transformacoes.RetaTransformacao;
+import computacaograficaswing.util.transformacoes.Reta;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -152,7 +152,7 @@ public class Transformacoes2DTela extends PlanoGrid {
         double x = 0;
         double y = 0;
 
-        for (RetaTransformacao reta : p.getRetas()) {
+        for (Reta reta : p.getRetas()) {
             x += (reta.getPontoInicial().getX() + reta.getPontoFinal().getX());
             y += (reta.getPontoInicial().getY() + reta.getPontoFinal().getY());
         }
@@ -398,11 +398,11 @@ public class Transformacoes2DTela extends PlanoGrid {
                 if (poligonoEmConstrucao) {
                     Ponto2D p = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     if (!p.equals(pontoInicialRetaAtual)) {
-                        (new BressenhamTransformacao().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
+                        (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
                             desenharPonto(corSelecionada, ponto);
                         });
 
-                        RetaTransformacao aux = new RetaTransformacao(new Ponto2D(pontoInicialRetaAtual.getX(), pontoInicialRetaAtual.getY()), new Ponto2D(p.getX(), p.getY()));
+                        Reta aux = new Reta(new Ponto2D(pontoInicialRetaAtual.getX(), pontoInicialRetaAtual.getY()), new Ponto2D(p.getX(), p.getY()));
                         poligonoAtual.getRetas().add(aux);
 
                         if (p.equals(pontoInicialReta)) {
@@ -430,7 +430,7 @@ public class Transformacoes2DTela extends PlanoGrid {
                 if (poligonoEmConstrucao) {
                     Ponto2D p = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     if (!p.equals(pontoInicialRetaAtual)) {
-                        (new BressenhamTransformacao().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
+                        (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
                             if (gridPaneMatriz[ponto.getXArredondado()][ponto.getYArredondado()].getFill().equals(corPadrao)) {
                                 pontosTemp.add(ponto);
                                 desenharPonto(corSelecionada, ponto);

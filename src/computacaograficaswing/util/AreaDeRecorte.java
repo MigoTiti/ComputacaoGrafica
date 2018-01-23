@@ -1,88 +1,89 @@
 package computacaograficaswing.util;
 
+import computacaograficaswing.util.transformacoes.Ponto2D;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class AreaDeRecorte {
     
-    private final Ponto pInicio;
-    private final Ponto pFim;
+    private final Ponto2D pInicio;
+    private final Ponto2D pFim;
     
-    public AreaDeRecorte(Ponto ponto1, Ponto ponto2) {
+    public AreaDeRecorte(Ponto2D ponto1, Ponto2D ponto2) {
         pInicio = ponto1;
         pFim = ponto2;
     }
     
-    public int xMax() {
-        return Integer.max(pInicio.getX(), pFim.getX());
+    public double xMax() {
+        return Double.max(pInicio.getX(), pFim.getX());
     }
     
-    public int yMax() {
-        return Integer.max(pInicio.getY(), pFim.getY());
+    public double yMax() {
+        return Double.max(pInicio.getY(), pFim.getY());
     }
     
-    public int xMin() {
-        return Integer.min(pInicio.getX(), pFim.getX());
+    public double xMin() {
+        return Double.min(pInicio.getX(), pFim.getX());
     }
     
-    public int yMin() {
-        return Integer.min(pInicio.getY(), pFim.getY());
+    public double yMin() {
+        return Double.min(pInicio.getY(), pFim.getY());
     }
     
-    public static Set<Ponto> gerarAreaDesenho(Ponto pInicio, Ponto pFim) {
-        Set<Ponto> area = new LinkedHashSet<>();
+    public static Set<Ponto2D> gerarAreaDesenho(Ponto2D pInicio, Ponto2D pFim) {
+        Set<Ponto2D> area = new LinkedHashSet<>();
         
         if (pInicio.getX() > pFim.getX()) {
-            for (int i = pFim.getX(); i <= pInicio.getX(); i++) {
-                area.add(new Ponto(i, pFim.getY()));
-                area.add(new Ponto(i, pInicio.getY()));
+            for (int i = pFim.getXArredondado(); i <= pInicio.getXArredondado(); i++) {
+                area.add(new Ponto2D(i, pFim.getY()));
+                area.add(new Ponto2D(i, pInicio.getY()));
             }
         } else {
-            for (int i = pInicio.getX(); i <= pFim.getX(); i++) {
-                area.add(new Ponto(i, pFim.getY()));
-                area.add(new Ponto(i, pInicio.getY()));
+            for (int i = pInicio.getXArredondado(); i <= pFim.getXArredondado(); i++) {
+                area.add(new Ponto2D(i, pFim.getY()));
+                area.add(new Ponto2D(i, pInicio.getY()));
             }
         }
         
         if (pInicio.getY() > pFim.getY()) {
-            for (int i = pFim.getY(); i <= pInicio.getY(); i++) {
-                area.add(new Ponto(pFim.getX(), i));
-                area.add(new Ponto(pInicio.getX(), i));
+            for (int i = pFim.getYArredondado(); i <= pInicio.getYArredondado(); i++) {
+                area.add(new Ponto2D(pFim.getX(), i));
+                area.add(new Ponto2D(pInicio.getX(), i));
             }
         } else {
-            for (int i = pInicio.getY(); i <= pFim.getY(); i++) {
-                area.add(new Ponto(pFim.getX(), i));
-                area.add(new Ponto(pInicio.getX(), i));
+            for (int i = pInicio.getYArredondado(); i <= pFim.getYArredondado(); i++) {
+                area.add(new Ponto2D(pFim.getX(), i));
+                area.add(new Ponto2D(pInicio.getX(), i));
             }
         }
         
         return area;
     }
     
-    public Set<Ponto> getTodosOsPontos() {
-        Set<Ponto> area = new LinkedHashSet<>();
+    public Set<Ponto2D> getTodosOsPontos() {
+        Set<Ponto2D> area = new LinkedHashSet<>();
         
         if (pInicio.getX() > pFim.getX()) {
-            for (int i = pFim.getX(); i <= pInicio.getX(); i++) {
-                area.add(new Ponto(i, pFim.getY()));
-                area.add(new Ponto(i, pInicio.getY()));
+            for (int i = pFim.getXArredondado(); i <= pInicio.getXArredondado(); i++) {
+                area.add(new Ponto2D(i, pFim.getY()));
+                area.add(new Ponto2D(i, pInicio.getY()));
             }
         } else {
-            for (int i = pInicio.getX(); i <= pFim.getX(); i++) {
-                area.add(new Ponto(i, pFim.getY()));
-                area.add(new Ponto(i, pInicio.getY()));
+            for (int i = pInicio.getXArredondado(); i <= pFim.getXArredondado(); i++) {
+                area.add(new Ponto2D(i, pFim.getY()));
+                area.add(new Ponto2D(i, pInicio.getY()));
             }
         }
         
         if (pInicio.getY() > pFim.getY()) {
-            for (int i = pFim.getY(); i <= pInicio.getY(); i++) {
-                area.add(new Ponto(pFim.getX(), i));
-                area.add(new Ponto(pInicio.getX(), i));
+            for (int i = pFim.getYArredondado(); i <= pInicio.getYArredondado(); i++) {
+                area.add(new Ponto2D(pFim.getX(), i));
+                area.add(new Ponto2D(pInicio.getX(), i));
             }
         } else {
-            for (int i = pInicio.getY(); i <= pFim.getY(); i++) {
-                area.add(new Ponto(pFim.getX(), i));
-                area.add(new Ponto(pInicio.getX(), i));
+            for (int i = pInicio.getYArredondado(); i <= pFim.getYArredondado(); i++) {
+                area.add(new Ponto2D(pFim.getX(), i));
+                area.add(new Ponto2D(pInicio.getX(), i));
             }
         }
         

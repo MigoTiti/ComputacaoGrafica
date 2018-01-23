@@ -5,8 +5,8 @@ import javafx.scene.control.Button;
 import computacaograficaswing.ComputacaoGraficaSwing;
 import static computacaograficaswing.ComputacaoGraficaSwing.fxContainer;
 import computacaograficaswing.areasdesenho.PlanoCartesiano;
-import computacaograficaswing.util.BressenhamReta;
-import computacaograficaswing.util.Ponto;
+import computacaograficaswing.util.transformacoes.BressenhamReta;
+import computacaograficaswing.util.transformacoes.Ponto2D;
 import java.util.Set;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
@@ -87,7 +87,7 @@ public class BressenhamRetaTela extends PlanoCartesiano {
                     int x2 = Integer.parseInt(x2Campo.getText());
                     int y2 = Integer.parseInt(y2Campo.getText());
                     
-                    Set<Ponto> pontos = new BressenhamReta().aplicarBressenham(new Ponto(x1, y1), new Ponto(x2, y2));
+                    Set<Ponto2D> pontos = new BressenhamReta().aplicarBressenham(new Ponto2D(x1, y1), new Ponto2D(x2, y2));
                     pontos.stream().forEach((ponto) -> {
                         desenharPonto(ponto);
                     });

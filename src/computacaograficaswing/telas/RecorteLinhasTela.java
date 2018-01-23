@@ -8,9 +8,9 @@ import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.areasdesenho.PlanoGrid;
 import static computacaograficaswing.telas.PreenchimentoTela.corPreenchimento;
 import computacaograficaswing.util.AreaDeRecorte;
-import computacaograficaswing.util.BressenhamReta;
-import computacaograficaswing.util.Ponto;
-import computacaograficaswing.util.Reta;
+import computacaograficaswing.util.transformacoes.BressenhamReta;
+import computacaograficaswing.util.transformacoes.Ponto2D;
+import computacaograficaswing.util.transformacoes.Reta;
 import java.util.HashSet;
 import java.util.Set;
 import javafx.geometry.Insets;
@@ -27,13 +27,13 @@ public class RecorteLinhasTela extends PlanoGrid {
 
     private boolean criarRetaLigada;
     private boolean retaEmConstrucao;
-    private Ponto pontoInicialReta;
+    private Ponto2D pontoInicialReta;
 
     private boolean escolherAreaLigada;
     private boolean areaEmConstrucao;
     private AreaDeRecorte areaDeRecorte;
 
-    private Set<Ponto> pontosTemp;
+    private Set<Ponto2D> pontosTemp;
 
     private Button desenharReta;
     private Button escolherAreaRecorte;
@@ -115,8 +115,8 @@ public class RecorteLinhasTela extends PlanoGrid {
     }
 
     private void pontoMedioClip(Reta reta) {
-        Ponto p1 = reta.getPontoInicial();
-        Ponto p2 = reta.getPontoFinal();
+        Ponto2D p1 = reta.getPontoInicial();
+        Ponto2D p2 = reta.getPontoFinal();
         boolean[] codigoInicio = gerarCodigo(p1);
         boolean[] codigoFim = gerarCodigo(p2);
         
@@ -125,10 +125,10 @@ public class RecorteLinhasTela extends PlanoGrid {
         } else if (and(codigoInicio, codigoFim)) {
             
         } else {
-            int xNovo = Math.toIntExact(Math.round((double)((double)p1.getX() + (double)p2.getX()) / 2.0));
-            int yNovo = Math.toIntExact(Math.round((double)((double)p1.getY() + (double)p2.getY()) / 2.0));
+            double xNovo = (p1.getX() + p2.getX()) / 2.0;
+            double yNovo = (p1.getY() + p2.getY()) / 2.0;
 
-            Ponto p = new Ponto(xNovo, yNovo);
+            Ponto2D p = new Ponto2D(xNovo, yNovo);
 
             if (Math.abs(p1.getX() - p2.getX()) < 1 && Math.abs(p1.getY() - p2.getY()) < 1) {
                 pontoMedioClip(new Reta(p1, p));
@@ -138,8 +138,8 @@ public class RecorteLinhasTela extends PlanoGrid {
     }
 
     private void csClip(Reta reta) {
-        Ponto p1 = reta.getPontoInicial();
-        Ponto p2 = reta.getPontoFinal();
+        Ponto2D p1 = reta.getPontoInicial();
+        Ponto2D p2 = reta.getPontoFinal();
         boolean[] codigoInicio = gerarCodigo(p1);
         boolean[] codigoFim = gerarCodigo(p2);
 
@@ -150,7 +150,7 @@ public class RecorteLinhasTela extends PlanoGrid {
         } else {
             int bitDiferente = bitDiferente(codigoInicio, codigoFim);
 
-            Ponto p = intersecao(bitDiferente, reta);
+            Ponto2D p = intersecao(bitDiferente, reta);
 
             if (dentro(reta.getPontoInicial())) {
                 csClip(new Reta(p, reta.getPontoInicial()));
@@ -172,7 +172,7 @@ public class RecorteLinhasTela extends PlanoGrid {
 
     private void limparReta(Reta reta) {
         reta.getPontos().forEach(ponto -> {
-            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corSelecionada)) {
+            if (gridPaneMatriz[ponto.getXArredondado()][ponto.getYArredondado()].getFill().equals(corSelecionada)) {
                 desenharPonto(corPadrao, ponto);
             }
         });
@@ -180,36 +180,36 @@ public class RecorteLinhasTela extends PlanoGrid {
 
     private void desenharReta(Color cor, Reta reta) {
         reta.getPontos().forEach(ponto -> {
-            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
+            if (gridPaneMatriz[ponto.getXArredondado()][ponto.getYArredondado()].getFill().equals(corPadrao)) {
                 desenharPonto(cor, ponto);
             }
         });
     }
 
-    private Ponto intersecao(int bit, Reta reta) {
+    private Ponto2D intersecao(int bit, Reta reta) {
         switch (bit) {
             case 0: {
-                int x = areaDeRecorte.xMin();
-                return new Ponto(x, Reta.intersecaoComX(x, reta));
+                double x = areaDeRecorte.xMin();
+                return new Ponto2D(x, Reta.intersecaoComX(x, reta));
             }
             case 1: {
-                int x = areaDeRecorte.xMax();
-                return new Ponto(x, Reta.intersecaoComX(x, reta));
+                double x = areaDeRecorte.xMax();
+                return new Ponto2D(x, Reta.intersecaoComX(x, reta));
             }
             case 2: {
-                int y = areaDeRecorte.yMin();
-                return new Ponto(Reta.intersecaoComY(y, reta), y);
+                double y = areaDeRecorte.yMin();
+                return new Ponto2D(Reta.intersecaoComY(y, reta), y);
             }
             case 3: {
-                int y = areaDeRecorte.yMax();
-                return new Ponto(Reta.intersecaoComY(y, reta), y);
+                double y = areaDeRecorte.yMax();
+                return new Ponto2D(Reta.intersecaoComY(y, reta), y);
             }
             default:
                 return null;
         }
     }
 
-    private boolean dentro(Ponto p) {
+    private boolean dentro(Ponto2D p) {
         boolean[] codigoPonto = gerarCodigo(p);
 
         return !(codigoPonto[0] || codigoPonto[1] || codigoPonto[2] || codigoPonto[3]);
@@ -233,13 +233,13 @@ public class RecorteLinhasTela extends PlanoGrid {
         return ((codigo1[0] && codigo2[0]) || (codigo1[1] && codigo2[1]) || (codigo1[2] && codigo2[2]) || (codigo1[3] && codigo2[3]));
     }
 
-    private boolean[] gerarCodigo(Ponto p) {
+    private boolean[] gerarCodigo(Ponto2D p) {
         boolean[] codigo = new boolean[]{false, false, false, false};
 
-        int yMax = areaDeRecorte.yMax();
-        int yMin = areaDeRecorte.yMin();
-        int xMax = areaDeRecorte.xMax();
-        int xMin = areaDeRecorte.xMin();
+        double yMax = areaDeRecorte.yMax();
+        double yMin = areaDeRecorte.yMin();
+        double xMax = areaDeRecorte.xMax();
+        double xMin = areaDeRecorte.xMin();
 
         if (sinal(yMax - p.getY()) == 1) {
             codigo[3] = true;
@@ -260,7 +260,7 @@ public class RecorteLinhasTela extends PlanoGrid {
         return codigo;
     }
 
-    private int sinal(int n) {
+    private int sinal(double n) {
         return n >= 0 ? 0 : 1;
     }
 
@@ -271,15 +271,15 @@ public class RecorteLinhasTela extends PlanoGrid {
         rect.setOnMouseClicked(event -> {
             if (criarRetaLigada) {
                 if (retaEmConstrucao) {
-                    Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    Ponto2D p = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     if (!p.equals(pontoInicialReta)) {
                         (new BressenhamReta().aplicarBressenham(pontoInicialReta, p)).forEach((ponto) -> {
-                            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
+                            if (gridPaneMatriz[ponto.getXArredondado()][ponto.getYArredondado()].getFill().equals(corPadrao)) {
                                 desenharPonto(corSelecionada, ponto);
                             }
                         });
 
-                        Reta aux = new Reta(new Ponto(pontoInicialReta.getX(), pontoInicialReta.getY()), new Ponto(p.getX(), p.getY()));
+                        Reta aux = new Reta(new Ponto2D(pontoInicialReta.getX(), pontoInicialReta.getY()), new Ponto2D(p.getX(), p.getY()));
 
                         retaEmConstrucao = false;
                         retas.add(aux);
@@ -287,17 +287,17 @@ public class RecorteLinhasTela extends PlanoGrid {
                     }
                 } else {
                     retaEmConstrucao = true;
-                    pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    pontoInicialReta = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     desenharPonto(corSelecionada, rect);
                 }
             } else if (escolherAreaLigada) {
                 if (areaEmConstrucao) {
-                    Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    Ponto2D p = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
 
                     areaDeRecorte = new AreaDeRecorte(pontoInicialReta, p);
 
                     areaDeRecorte.getTodosOsPontos().stream().forEach(ponto -> {
-                        if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
+                        if (gridPaneMatriz[ponto.getXArredondado()][ponto.getYArredondado()].getFill().equals(corPadrao)) {
                             desenharPonto(corPreenchimento, ponto);
                         }
                     });
@@ -306,7 +306,7 @@ public class RecorteLinhasTela extends PlanoGrid {
                     pontosTemp.clear();
                 } else {
                     areaEmConstrucao = true;
-                    pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    pontoInicialReta = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     desenharPonto(corPreenchimento, rect);
                 }
             }
@@ -315,11 +315,11 @@ public class RecorteLinhasTela extends PlanoGrid {
         rect.setOnMouseEntered(event -> {
             if (criarRetaLigada) {
                 if (retaEmConstrucao) {
-                    Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    Ponto2D p = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
 
                     if (!p.equals(pontoInicialReta)) {
                         (new BressenhamReta().aplicarBressenham(pontoInicialReta, p)).forEach((ponto) -> {
-                            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
+                            if (gridPaneMatriz[ponto.getXArredondado()][ponto.getYArredondado()].getFill().equals(corPadrao)) {
                                 pontosTemp.add(ponto);
                                 desenharPonto(corSelecionada, ponto);
                             }
@@ -328,11 +328,11 @@ public class RecorteLinhasTela extends PlanoGrid {
                 }
             } else if (escolherAreaLigada) {
                 if (areaEmConstrucao) {
-                    Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    Ponto2D p = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
 
                     if (!p.equals(pontoInicialReta)) {
                         AreaDeRecorte.gerarAreaDesenho(pontoInicialReta, p).forEach((ponto) -> {
-                            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
+                            if (gridPaneMatriz[ponto.getXArredondado()][ponto.getYArredondado()].getFill().equals(corPadrao)) {
                                 pontosTemp.add(ponto);
                                 desenharPonto(corPreenchimento, ponto);
                             }

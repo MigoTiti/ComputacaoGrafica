@@ -1,4 +1,4 @@
-package computacaograficaswing.util;
+package computacaograficaswing.util.transformacoes;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -15,25 +15,25 @@ public class BressenhamReta {
         trocaY = false;
     }
 
-    public Set<Ponto> aplicarBressenham(Ponto p1, Ponto p2) {
-        int[] novosPontos = reflexao(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-        int x1 = novosPontos[0];
-        int y1 = novosPontos[1];
-        int x2 = novosPontos[2];
-        int y2 = novosPontos[3];
+    public Set<Ponto2D> aplicarBressenham(Ponto2D p1, Ponto2D p2) {
+        double[] novosPontos = reflexao(p1.getX(), p1.getY(), p2.getX(), p2.getY());
+        double x1 = novosPontos[0];
+        double y1 = novosPontos[1];
+        double x2 = novosPontos[2];
+        double y2 = novosPontos[3];
 
-        int deltaX = x2 - x1;
-        int deltaY = y2 - y1;
+        double deltaX = x2 - x1;
+        double deltaY = y2 - y1;
 
-        double coeficienteAngular = (double) deltaY / (double) deltaX;
+        double coeficienteAngular = deltaY / deltaX;
 
         double erro = coeficienteAngular - 0.5;
 
-        int x = x1;
-        int y = y1;
+        double x = x1;
+        double y = y1;
 
-        Set<Ponto> pontos = new LinkedHashSet<>();
-        pontos.add(new Ponto(x, y));
+        Set<Ponto2D> pontos = new LinkedHashSet<>();
+        pontos.add(new Ponto2D(x, y));
 
         while (x < x2) {
             if (erro >= 0) {
@@ -43,21 +43,21 @@ public class BressenhamReta {
 
             x++;
             erro += coeficienteAngular;
-            pontos.add(new Ponto(x, y));
+            pontos.add(new Ponto2D(x, y));
         }
 
         reflexaoVolta(pontos);
         return pontos;
     }
 
-    private int[] reflexao(int x1, int y1, int x2, int y2) {
-        int deltaX = x2 - x1;
-        int deltaY = y2 - y1;
+    private double[] reflexao(double x1, double y1, double x2, double y2) {
+        double deltaX = x2 - x1;
+        double deltaY = y2 - y1;
 
-        double coeficienteAngular = (double) deltaY / (double) deltaX;
+        double coeficienteAngular = deltaY / deltaX;
 
         if (coeficienteAngular > 1 || coeficienteAngular <= -1) {
-            int aux = x1;
+            double aux = x1;
             x1 = y1;
             y1 = aux;
 
@@ -82,10 +82,10 @@ public class BressenhamReta {
             trocaY = true;
         }
 
-        return new int[]{x1, y1, x2, y2};
+        return new double[]{x1, y1, x2, y2};
     }
 
-    private void reflexaoVolta(Set<Ponto> pontos) {
+    private void reflexaoVolta(Set<Ponto2D> pontos) {
         if (trocaY) {
             pontos.stream().forEach((ponto) -> {
                 ponto.negarY();

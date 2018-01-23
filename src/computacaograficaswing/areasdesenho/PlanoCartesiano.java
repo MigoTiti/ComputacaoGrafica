@@ -4,7 +4,7 @@ import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_RETANGULO;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.framebuffer.FrameBufferPlanoCartesiano;
-import computacaograficaswing.util.Ponto;
+import computacaograficaswing.util.transformacoes.Ponto2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -84,9 +84,9 @@ public abstract class PlanoCartesiano extends AreaDesenho{
         return new Group(gridPane);
     }
 
-    protected void desenharPonto(Ponto p) {
-        int x = p.getX();
-        int y = p.getY();
+    protected void desenharPonto(Ponto2D p) {
+        int x = p.getXArredondado();
+        int y = p.getYArredondado();
 
         if (x >= 0 && y >= 0) {
             int yNovo = (ORDEM / 2 - 1) - y;

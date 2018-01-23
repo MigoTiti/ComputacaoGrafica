@@ -6,11 +6,11 @@ import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_CELULA;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.areasdesenho.PlanoGrid;
-import computacaograficaswing.util.BressenhamReta;
 import computacaograficaswing.framebuffer.FrameBufferGrid;
-import computacaograficaswing.util.Poligono;
-import computacaograficaswing.util.Ponto;
-import computacaograficaswing.util.Reta;
+import computacaograficaswing.util.transformacoes.BressenhamReta;
+import computacaograficaswing.util.transformacoes.Poligono2D;
+import computacaograficaswing.util.transformacoes.Ponto2D;
+import computacaograficaswing.util.transformacoes.Reta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,12 +35,12 @@ public class PreenchimentoTela extends PlanoGrid {
     private boolean preenchimentoAtivado;
     private boolean poligonoAtivado;
     private boolean poligonoEmConstrucao;
-    private Ponto pontoInicialReta;
-    private Ponto pontoInicialRetaAtual;
-    private Poligono poligonoAtual;
-    private Set<Poligono> poligonos;
+    private Ponto2D pontoInicialReta;
+    private Ponto2D pontoInicialRetaAtual;
+    private Poligono2D poligonoAtual;
+    private Set<Poligono2D> poligonos;
 
-    private Set<Ponto> pontosTemp;
+    private Set<Ponto2D> pontosTemp;
     
     public static Color corPreenchimento = Color.BLACK;
 
@@ -154,11 +154,11 @@ public class PreenchimentoTela extends PlanoGrid {
         });
 
         for (int yVarredura = 0; yVarredura < gridPaneMatriz.length; yVarredura++) {
-            List<Integer> intersecoes = new ArrayList<>();
+            List<Double> intersecoes = new ArrayList<>();
 
             for (Reta reta : retas) {
                 if (yVarredura >= reta.yMinimo() && yVarredura <= reta.yMaximo()) {
-                    int intersecao = Reta.intersecaoComY(yVarredura, reta);
+                    double intersecao = Reta.intersecaoComY(yVarredura, reta);
 
                     if (intersecao >= 0 && intersecao < gridPaneMatriz.length) {
                         intersecoes.add(intersecao);
@@ -170,9 +170,9 @@ public class PreenchimentoTela extends PlanoGrid {
 
             System.out.print("\nLinha " + yVarredura + ", numero de intersecoes = " + intersecoes.size() + "; " + Arrays.toString(intersecoes.toArray()));
             
-            Set<Integer> pontosASeremRemovidos = new HashSet<>();
+            Set<Double> pontosASeremRemovidos = new HashSet<>();
             
-            intersecoes.stream().forEach((Integer intersecao) -> {
+            intersecoes.stream().forEach(intersecao -> {
                 int contagem = Collections.frequency(intersecoes, intersecao);
                 if (contagem > 1) {
                     int contagemPontosMaximos = 0;
@@ -195,7 +195,7 @@ public class PreenchimentoTela extends PlanoGrid {
             
             if (intersecoes.size() % 2 == 0) {
                 for (int i = 0; i < intersecoes.size() - 1; i += 2) {
-                    for (int j = intersecoes.get(i); j <= intersecoes.get(i + 1); j++) {
+                    for (int j = (int)Math.round(intersecoes.get(i)); j <= (int)Math.round(intersecoes.get(i + 1)); j++) {
                         desenharPonto(corPreenchimento, j, yVarredura);
                     }
                 }
@@ -224,13 +224,13 @@ public class PreenchimentoTela extends PlanoGrid {
                 preenchimentoRecursivo(((Color) rect.getFill()), corPreenchimento, (int) GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
             } else if (poligonoAtivado) {
                 if (poligonoEmConstrucao) {
-                    Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    Ponto2D p = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     if (!p.equals(pontoInicialRetaAtual)) {
                         (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
                             desenharPonto(corSelecionada, ponto);
                         });
                         
-                        Reta aux = new Reta(new Ponto(pontoInicialRetaAtual.getX(), pontoInicialRetaAtual.getY()), new Ponto(p.getX(), p.getY()));
+                        Reta aux = new Reta(new Ponto2D(pontoInicialRetaAtual.getX(), pontoInicialRetaAtual.getY()), new Ponto2D(p.getX(), p.getY()));
                         poligonoAtual.getRetas().add(aux);
 
                         if (p.equals(pontoInicialReta)) {
@@ -244,9 +244,9 @@ public class PreenchimentoTela extends PlanoGrid {
                         pontosTemp.clear();
                     }
                 } else {
-                    poligonoAtual = new Poligono();
+                    poligonoAtual = new Poligono2D();
                     poligonoEmConstrucao = true;
-                    pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    pontoInicialReta = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     pontoInicialRetaAtual = pontoInicialReta;
                     desenharPonto(corSelecionada, rect);
                 }
@@ -262,10 +262,10 @@ public class PreenchimentoTela extends PlanoGrid {
         rect.setOnMouseEntered(event -> {
             if (poligonoAtivado) {
                 if (poligonoEmConstrucao) {
-                    Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    Ponto2D p = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     if (!p.equals(pontoInicialRetaAtual)) {
                         (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
-                            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
+                            if (gridPaneMatriz[ponto.getXArredondado()][ponto.getYArredondado()].getFill().equals(corPadrao)) {
                                 pontosTemp.add(ponto);
                                 desenharPonto(corSelecionada, ponto);
                             }
