@@ -16,22 +16,6 @@ public class Ponto {
         y = aux;
     }
     
-    public void incrementarX(int n) {
-        x += n;
-    }
-    
-    public void decrementarX(int n) {
-        x -= n;
-    }
-    
-    public void incrementarY(int n) {
-        y += n;
-    }
-    
-    public void decrementarY(int n) {
-        y -= n;
-    }
-    
     public void negarX() {
         x = -x;
     }

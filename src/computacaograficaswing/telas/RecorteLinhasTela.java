@@ -119,20 +119,43 @@ public class RecorteLinhasTela extends PlanoGrid {
         Ponto p2 = reta.getPontoFinal();
         boolean[] codigoInicio = gerarCodigo(p1);
         boolean[] codigoFim = gerarCodigo(p2);
+        
+        if (!or(codigoInicio, codigoFim)) {
+            desenharReta(Color.RED, reta);
+        } else if (and(codigoInicio, codigoFim)) {
+            
+        } else {
+            int xNovo = Math.toIntExact(Math.round((double)((double)p1.getX() + (double)p2.getX()) / 2.0));
+            int yNovo = Math.toIntExact(Math.round((double)((double)p1.getY() + (double)p2.getY()) / 2.0));
+
+            Ponto p = new Ponto(xNovo, yNovo);
+
+            if (Math.abs(p1.getX() - p2.getX()) < 1 && Math.abs(p1.getY() - p2.getY()) < 1) {
+                pontoMedioClip(new Reta(p1, p));
+                pontoMedioClip(new Reta(p, p2));
+            }
+        }
+    }
+
+    private void csClip(Reta reta) {
+        Ponto p1 = reta.getPontoInicial();
+        Ponto p2 = reta.getPontoFinal();
+        boolean[] codigoInicio = gerarCodigo(p1);
+        boolean[] codigoFim = gerarCodigo(p2);
 
         if (!or(codigoInicio, codigoFim)) {
             desenharReta(corSelecionada, reta);
         } else if (and(codigoInicio, codigoFim)) {
-            
+
         } else {
-            int xNovo = Math.round((p1.getX() + p2.getX()) / 2);
-            int yNovo = Math.round((p1.getY() + p2.getY()) / 2);
+            int bitDiferente = bitDiferente(codigoInicio, codigoFim);
 
-            Ponto p = new Ponto(xNovo, yNovo);
+            Ponto p = intersecao(bitDiferente, reta);
 
-            if (Math.abs(p1.getX() - p2.getX()) <= 1 && Math.abs(p1.getY() - p2.getY()) <= 1) {
-                pontoMedioClip(new Reta(p1, p));
-                pontoMedioClip(new Reta(p, p2));
+            if (dentro(reta.getPontoInicial())) {
+                csClip(new Reta(p, reta.getPontoInicial()));
+            } else {
+                csClip(new Reta(reta.getPontoFinal(), p));
             }
         }
     }
@@ -161,29 +184,6 @@ public class RecorteLinhasTela extends PlanoGrid {
                 desenharPonto(cor, ponto);
             }
         });
-    }
-
-    private void csClip(Reta reta) {
-        Ponto p1 = reta.getPontoInicial();
-        Ponto p2 = reta.getPontoFinal();
-        boolean[] codigoInicio = gerarCodigo(p1);
-        boolean[] codigoFim = gerarCodigo(p2);
-
-        if (!or(codigoInicio, codigoFim)) {
-            desenharReta(corSelecionada, reta);
-        } else if (and(codigoInicio, codigoFim)) {
-            
-        } else {
-            int bitDiferente = bitDiferente(codigoInicio, codigoFim);
-
-            Ponto p = intersecao(bitDiferente, reta);
-
-            if (dentro(reta.getPontoInicial())) {
-                csClip(new Reta(p, reta.getPontoInicial()));
-            } else {
-                csClip(new Reta(reta.getPontoFinal(), p));
-            }
-        }
     }
 
     private Ponto intersecao(int bit, Reta reta) {

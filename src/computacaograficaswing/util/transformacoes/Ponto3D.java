@@ -1,33 +1,37 @@
-package computacaograficaswing.util;
+package computacaograficaswing.util.transformacoes;
 
 import java.io.Serializable;
 
-public class Ponto3D extends Ponto implements Serializable{
+public class Ponto3D extends Ponto2D implements Serializable{
 
-    private int z;
+    private double z;
 
     public Ponto3D(Ponto3D ponto) {
         super(ponto.getX(), ponto.getY());
         this.z = ponto.getZ();
     }
     
-    public Ponto3D(int x, int y, int z) {
+    public Ponto3D(double x, double y, double z) {
         super(x, y);
 
         this.z = z;
     }
     
-    public Ponto3D(int x, int y) {
+    public Ponto3D(double x, double y) {
         super(x, y);
 
         this.z = 0;
     }
 
-    public int getZ() {
+    public int getZArredondado() {
+        return Math.toIntExact(Math.round(z));
+    }
+    
+    public double getZ() {
         return z;
     }
 
-    public void setZ(int z) {
+    public void setZ(double z) {
         this.z = z;
     }
     
@@ -44,15 +48,13 @@ public class Ponto3D extends Ponto implements Serializable{
         }
 
         return false;
-    }
+
+}
 
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 29 * hash + this.x;
-        hash = 29 * hash + this.y;
-        hash = 29 * hash + this.z;
+        hash = 97 * hash + (int) (Double.doubleToLongBits(this.z) ^ (Double.doubleToLongBits(this.z) >>> 32));
         return hash;
     }
-
 }

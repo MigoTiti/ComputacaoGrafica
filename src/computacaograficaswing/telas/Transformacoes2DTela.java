@@ -7,11 +7,11 @@ import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corSelecionada;
 import computacaograficaswing.areasdesenho.PlanoGrid;
 import static computacaograficaswing.telas.PreenchimentoTela.corPreenchimento;
-import computacaograficaswing.util.BressenhamReta;
 import computacaograficaswing.util.Matriz;
-import computacaograficaswing.util.Poligono;
-import computacaograficaswing.util.Ponto;
-import computacaograficaswing.util.Reta;
+import computacaograficaswing.util.transformacoes.BressenhamTransformacao;
+import computacaograficaswing.util.transformacoes.Poligono2D;
+import computacaograficaswing.util.transformacoes.Ponto2D;
+import computacaograficaswing.util.transformacoes.RetaTransformacao;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -32,16 +32,16 @@ import javafx.scene.shape.Rectangle;
 
 public class Transformacoes2DTela extends PlanoGrid {
 
-    private Set<Ponto> pontosTemp;
+    private Set<Ponto2D> pontosTemp;
 
     private Button desenharPoligono;
 
     private boolean poligonoAtivado;
     private boolean poligonoEmConstrucao;
-    private Ponto pontoInicialReta;
-    private Ponto pontoInicialRetaAtual;
-    private Poligono poligonoAtual;
-    private Set<Poligono> poligonos;
+    private Ponto2D pontoInicialReta;
+    private Ponto2D pontoInicialRetaAtual;
+    private Poligono2D poligonoAtual;
+    private Set<Poligono2D> poligonos;
 
     public void iniciarTela() {
         ComputacaoGraficaSwing.mudarTitulo("Transformações 2D");
@@ -115,12 +115,12 @@ public class Transformacoes2DTela extends PlanoGrid {
         
         poligonos.stream().forEach((poligono) -> {
             poligono.getRetas().stream().forEach((reta) -> {      
-                int[] pontoTransformado = Matriz.translacao2D(reta.getPontoInicial(), taxaX, taxaY);
+                double[] pontoTransformado = Matriz.translacao2D(reta.getPontoInicial(), taxaX, taxaY);
                 
                 reta.getPontoInicial().setX(pontoTransformado[0]);
                 reta.getPontoInicial().setY(pontoTransformado[1]);
                 
-                int[] pontoTransformadoFinal = Matriz.translacao2D(reta.getPontoFinal(), taxaX, taxaY);
+                double[] pontoTransformadoFinal = Matriz.translacao2D(reta.getPontoFinal(), taxaX, taxaY);
                 
                 reta.getPontoFinal().setX(pontoTransformadoFinal[0]);
                 reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
@@ -143,12 +143,12 @@ public class Transformacoes2DTela extends PlanoGrid {
         
         poligonos.stream().forEach((poligono) -> {
             poligono.getRetas().stream().forEach((reta) -> {     
-                int[] pontoTransformado = Matriz.rotacao2D(reta.getPontoInicial(), angulo);
+                double[] pontoTransformado = Matriz.rotacao2D(reta.getPontoInicial(), angulo);
                 
                 reta.getPontoInicial().setX(pontoTransformado[0]);
                 reta.getPontoInicial().setY(pontoTransformado[1]);
                 
-                int[] pontoTransformadoFinal = Matriz.rotacao2D(reta.getPontoFinal(), angulo);
+                double[] pontoTransformadoFinal = Matriz.rotacao2D(reta.getPontoFinal(), angulo);
                 
                 reta.getPontoFinal().setX(pontoTransformadoFinal[0]);
                 reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
@@ -171,12 +171,12 @@ public class Transformacoes2DTela extends PlanoGrid {
         
         poligonos.stream().forEach((poligono) -> {
             poligono.getRetas().stream().forEach((reta) -> {              
-                int[] pontoTransformado = Matriz.escala2D(reta.getPontoInicial(), taxaX, taxaY);
+                double[] pontoTransformado = Matriz.escala2D(reta.getPontoInicial(), taxaX, taxaY);
                 
                 reta.getPontoInicial().setX(pontoTransformado[0]);
                 reta.getPontoInicial().setY(pontoTransformado[1]);
                 
-                int[] pontoTransformadoFinal = Matriz.escala2D(reta.getPontoFinal(), taxaX, taxaY);
+                double[] pontoTransformadoFinal = Matriz.escala2D(reta.getPontoFinal(), taxaX, taxaY);
                 
                 reta.getPontoFinal().setX(pontoTransformadoFinal[0]);
                 reta.getPontoFinal().setY(pontoTransformadoFinal[1]);
@@ -339,13 +339,13 @@ public class Transformacoes2DTela extends PlanoGrid {
         rect.setOnMouseClicked(event -> {
             if (poligonoAtivado) {
                 if (poligonoEmConstrucao) {
-                    Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    Ponto2D p = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     if (!p.equals(pontoInicialRetaAtual)) {
-                        (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
+                        (new BressenhamTransformacao().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
                             desenharPonto(corSelecionada, ponto);
                         });
 
-                        Reta aux = new Reta(new Ponto(pontoInicialRetaAtual.getX(), pontoInicialRetaAtual.getY()), new Ponto(p.getX(), p.getY()));
+                        RetaTransformacao aux = new RetaTransformacao(new Ponto2D(pontoInicialRetaAtual.getX(), pontoInicialRetaAtual.getY()), new Ponto2D(p.getX(), p.getY()));
                         poligonoAtual.getRetas().add(aux);
 
                         if (p.equals(pontoInicialReta)) {
@@ -359,9 +359,9 @@ public class Transformacoes2DTela extends PlanoGrid {
                         pontosTemp.clear();
                     }
                 } else {
-                    poligonoAtual = new Poligono();
+                    poligonoAtual = new Poligono2D();
                     poligonoEmConstrucao = true;
-                    pontoInicialReta = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    pontoInicialReta = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     pontoInicialRetaAtual = pontoInicialReta;
                     desenharPonto(corSelecionada, rect);
                 }
@@ -371,10 +371,10 @@ public class Transformacoes2DTela extends PlanoGrid {
         rect.setOnMouseEntered(event -> {
             if (poligonoAtivado) {
                 if (poligonoEmConstrucao) {
-                    Ponto p = new Ponto(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
+                    Ponto2D p = new Ponto2D(GridPane.getColumnIndex(rect), (int) GridPane.getRowIndex(rect));
                     if (!p.equals(pontoInicialRetaAtual)) {
-                        (new BressenhamReta().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
-                            if (gridPaneMatriz[ponto.getX()][ponto.getY()].getFill().equals(corPadrao)) {
+                        (new BressenhamTransformacao().aplicarBressenham(pontoInicialRetaAtual, p)).forEach((ponto) -> {
+                            if (gridPaneMatriz[ponto.getXArredondado()][ponto.getYArredondado()].getFill().equals(corPadrao)) {
                                 pontosTemp.add(ponto);
                                 desenharPonto(corSelecionada, ponto);
                             }

@@ -12,10 +12,6 @@ public class Poligono {
         this.retas.add(reta);
     }
 
-    public Poligono(Set<Reta> retas) {
-        this.retas = retas;
-    }
-
     public Poligono() {
         this.retas = new LinkedHashSet<>();
     }

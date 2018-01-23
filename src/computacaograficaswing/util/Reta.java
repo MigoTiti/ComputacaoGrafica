@@ -56,12 +56,12 @@ public class Reta {
     public static int intersecaoComY(int yEscolhido, Reta reta) {
         double coeficienteNovo = 1 / reta.coeficienteAngular();
         
-        return (int)Math.round(coeficienteNovo * (yEscolhido - reta.yMinimo()) + reta.xParaYMin());
+        return Math.toIntExact(Math.round(coeficienteNovo * (yEscolhido - reta.yMinimo()) + reta.xParaYMin()));
     }
     
     public static int intersecaoComX(int xEscolhido, Reta reta) {
         double coeficienteNovo = 1 / reta.coeficienteAngular();
         
-        return (int)Math.round(((xEscolhido - reta.xParaYMin())/coeficienteNovo) + reta.yMinimo());
+        return Math.toIntExact(Math.round(((xEscolhido - reta.xParaYMin())/coeficienteNovo) + reta.yMinimo()));
     }
 }

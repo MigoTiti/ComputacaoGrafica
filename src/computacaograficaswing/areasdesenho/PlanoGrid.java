@@ -5,6 +5,7 @@ import static computacaograficaswing.areasdesenho.AreaDesenho.TAMANHO_CELULA;
 import static computacaograficaswing.areasdesenho.AreaDesenho.corPadrao;
 import computacaograficaswing.framebuffer.FrameBufferGrid;
 import computacaograficaswing.util.Ponto;
+import computacaograficaswing.util.transformacoes.Ponto2D;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -25,6 +26,10 @@ public abstract class PlanoGrid extends AreaDesenho {
 
     protected void desenharPonto(Color cor, Ponto p) {
         desenharPonto(cor, p.getX(), p.getY());
+    }
+    
+    protected void desenharPonto(Color cor, Ponto2D p) {
+        desenharPonto(cor, p.getXArredondado(), p.getYArredondado());
     }
 
     protected void desenharPonto(Color cor, int x, int y) {

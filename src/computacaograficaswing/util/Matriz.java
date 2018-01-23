@@ -1,5 +1,8 @@
 package computacaograficaswing.util;
 
+import computacaograficaswing.util.transformacoes.Ponto2D;
+import computacaograficaswing.util.transformacoes.Ponto3D;
+
 public class Matriz {
     
     public static int[] projecaoPerspectiva3PontosFuga(Ponto3D p) {
@@ -7,7 +10,7 @@ public class Matriz {
         return resultado;
     }
     
-    public static int[] projecaoObliqua(Ponto3D p, double fatorProfundidade, double angulo) {
+    public static double[] projecaoObliqua(Ponto3D p, double fatorProfundidade, double angulo) {
         double[][] matrizProjecao = {{1, 0, fatorProfundidade * Math.cos(Math.toRadians(angulo)), 0}, 
                                      {0, 1, fatorProfundidade * Math.sin(Math.toRadians(angulo)), 0},
                                      {0, 0, 0, 0},
@@ -18,7 +21,7 @@ public class Matriz {
         return multiplicacaoMatrizPorVetor(matrizProjecao, coordenadas);
     }
     
-    public static int[] escala3D(Ponto3D p, double taxaX, double taxaY, double taxaZ) {
+    public static double[] escala3D(Ponto3D p, double taxaX, double taxaY, double taxaZ) {
         double[][] matrizEscala = {{taxaX, 0, 0, 0}, 
                                    {0, taxaY, 0, 0}, 
                                    {0, 0, taxaZ, 0}, 
@@ -29,7 +32,7 @@ public class Matriz {
         return multiplicacaoMatrizPorVetor(matrizEscala, coordenadas);
     }
     
-    public static int[] translacao3D(Ponto3D p, int taxaX, int taxaY, int taxaZ) {
+    public static double[] translacao3D(Ponto3D p, int taxaX, int taxaY, int taxaZ) {
         double[][] matrizTranslacao = {{1, 0, 0, taxaX}, 
                                        {0, 1, 0, taxaY}, 
                                        {0, 0, 1, taxaZ},
@@ -40,7 +43,7 @@ public class Matriz {
         return multiplicacaoMatrizPorVetor(matrizTranslacao, coordenadas);
     }
     
-    public static int[] rotacao3DX(Ponto3D p, double angulo) {
+    public static double[] rotacao3DX(Ponto3D p, double angulo) {
         double[][] matrizRotacao = {{1, 0, 0, 0},
                                     {0, Math.cos(Math.toRadians(angulo)), -Math.sin(Math.toRadians(angulo)), 0}, 
                                     {0, Math.sin(Math.toRadians(angulo)), Math.cos(Math.toRadians(angulo)), 0}, 
@@ -51,7 +54,7 @@ public class Matriz {
         return multiplicacaoMatrizPorVetor(matrizRotacao, coordenadas);
     }
     
-    public static int[] rotacao3DY(Ponto3D p, double angulo) {
+    public static double[] rotacao3DY(Ponto3D p, double angulo) {
         double[][] matrizRotacao = {{Math.cos(Math.toRadians(angulo)), 0, Math.sin(Math.toRadians(angulo)), 0}, 
                                     {0, 1, 0, 0},
                                     {-Math.sin(Math.toRadians(angulo)), 0, Math.cos(Math.toRadians(angulo)), 0},
@@ -62,7 +65,7 @@ public class Matriz {
         return multiplicacaoMatrizPorVetor(matrizRotacao, coordenadas);
     }
     
-    public static int[] rotacao3DZ(Ponto3D p, double angulo) {
+    public static double[] rotacao3DZ(Ponto3D p, double angulo) {
         double[][] matrizRotacao = {{Math.cos(Math.toRadians(angulo)), -Math.sin(Math.toRadians(angulo)), 0, 0}, 
                                     {Math.sin(Math.toRadians(angulo)), Math.cos(Math.toRadians(angulo)), 0, 0}, 
                                     {0, 0, 1, 0},
@@ -73,7 +76,7 @@ public class Matriz {
         return multiplicacaoMatrizPorVetor(matrizRotacao, coordenadas);
     }
     
-    public static int[] escala2D(Ponto p, double taxaX, double taxaY) {
+    public static double[] escala2D(Ponto2D p, double taxaX, double taxaY) {
         double[][] matrizEscala = {{taxaX, 0, 0}, 
                                    {0, taxaY, 0}, 
                                    {0, 0, 1}};
@@ -83,7 +86,7 @@ public class Matriz {
         return multiplicacaoMatrizPorVetor(matrizEscala, coordenadas);
     }
     
-    public static int[] translacao2D(Ponto p, int taxaX, int taxaY) {
+    public static double[] translacao2D(Ponto2D p, int taxaX, int taxaY) {
         double[][] matrizTranslacao = {{1, 0, taxaX}, 
                                        {0, 1, taxaY}, 
                                        {0, 0, 1}};
@@ -93,7 +96,7 @@ public class Matriz {
         return multiplicacaoMatrizPorVetor(matrizTranslacao, coordenadas);
     }
     
-    public static int[] rotacao2D(Ponto p, double angulo) {
+    public static double[] rotacao2D(Ponto2D p, double angulo) {
         double[][] matrizRotacao = {{Math.cos(Math.toRadians(angulo)), -Math.sin(Math.toRadians(angulo)), 0}, 
                                     {Math.sin(Math.toRadians(angulo)), Math.cos(Math.toRadians(angulo)), 0}, 
                                     {0, 0, 1}};
@@ -103,10 +106,10 @@ public class Matriz {
         return multiplicacaoMatrizPorVetor(matrizRotacao, coordenadas);
     }
     
-    private static int[] multiplicacaoMatrizPorVetor(double[][] matriz, double[] vetor) {
+    private static double[] multiplicacaoMatrizPorVetor(double[][] matriz, double[] vetor) {
         int tamanho = vetor.length;
         
-        int resultado[] = new int[tamanho];
+        double resultado[] = new double[tamanho];
         
         for (int i = 0; i < tamanho; i++) {
             double soma = 0;
@@ -115,7 +118,7 @@ public class Matriz {
                 soma += matriz[i][j] * vetor[j];
             }
             
-            resultado[i] = Math.toIntExact(Math.round(soma));
+            resultado[i] = soma;
         }
         
         return resultado;
